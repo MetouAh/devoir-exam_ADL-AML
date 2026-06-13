@@ -1,3 +1,7 @@
+#Fatimetou Ahmed Mina .C34607
+#Mariem Med Elbechir. C34606
+#El Kheit Mohamed Babaha.C21838
+#Zahra Yeslek Boubecar C34645
 # devoir-exam_ADL-AML
 ## contenu du fichier
 AML_Stacking_Blending_95Plus_with_html_ppt_pdf: contient la presentation du cour ML (Stacking et Blending)
