@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Blending et comparaison détaillée — AML Stacking & Blending</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+<body>
+<div class="progress"></div>
+<div class="page-shell">
+  <aside class="sidebar">
+    <div class="brand"><div class="brand-mark"></div><div><h1>AML · Stacking</h1><p>Master IA · Paire 4</p></div></div>
+    <div class="side-actions">
+      <button class="btn ghost mobile-menu">Menu</button>
+      <button class="btn ghost" onclick="toggleTheme()">Mode clair/sombre</button>
+      <a class="btn green" href="../notebooks/05_master_complete_colab.ipynb">Notebook complet</a>
+    </div>
+    <div class="nav">
+      <div class="nav-group-title">Pages du cours</div>
+      <a class="" href="../index.html">Accueil</a>
+<a class="" href="01_motivation.html">1 · Motivation & Ensemble</a>
+<a class="" href="02_stacking_oof.html">2 · Stacking & OOF</a>
+<a class="active" href="03_blending_comparison.html">3 · Blending & Comparaison</a>
+<a class="" href="04_math_pseudocode.html">4 · Math & Pseudo-code</a>
+<a class="" href="05_implementation.html">5 · Implémentations</a>
+<a class="" href="06_experiments.html">6 · Expériences</a>
+<a class="" href="07_aml_adl_bridge.html">7 · Pont AML × ADL</a>
+<a class="" href="08_questions_references.html">8 · Questions & Références</a>
+      <div class="nav-group-title">Code & livrables</div>
+      <a href="../src/stacking_from_scratch.py">CustomStackingClassifier</a>
+      <a href="../src/blending.py">CustomBlendingClassifier</a>
+      <a href="../README.md">README</a>
+      <a href="../references.md">Bibliographie</a>
+    </div>
+  </aside>
+  <main class="main">
+    <div class="topbar">
+      <button class="btn ghost mobile-menu">☰</button>
+      <div class="breadcrumbs">AML × ADL / Stacking et Blending / Blending et comparaison détaillée</div>
+      <button class="btn ghost" onclick="toggleTheme()">☼</button>
+    </div>
+    <div class="container">
+      <section class="section">
+        <div class="eyebrow">Advanced Machine Learning</div>
+        <h2>Blending et comparaison détaillée</h2>
+        <p class="lead">Différencier clairement le stacking OOF et le blending hold-out : principe, mathématique, stabilité, coût et usage académique.</p>
+      </section>
+
+<section class="section">
+  <h2>1. Définition du blending</h2>
+  <p>Le blending est une variante du stacking : au lieu d’utiliser K folds OOF, on réserve un sous-ensemble du train set appelé <strong>blend set</strong>. Les base learners sont entraînés sur <code>D_base</code>, puis ils prédisent <code>D_blend</code>. Le meta-learner apprend sur ces prédictions.</p>
+  <img class="diagram" src="../assets/diagrams/blending_vs_stacking.svg" alt="Blending vs Stacking">
+</section>
+<section class="section">
+  <h2>2. Comparaison approfondie</h2>
+  <div class="table-wrap"><table>
+    <tr><th>Critère</th><th>Stacking OOF</th><th>Blending</th></tr>
+    <tr><td><strong>Construction de Z</strong></td><td>Validation croisée Out-of-Fold</td><td>Hold-out blend set</td></tr>
+    <tr><td><strong>Utilisation du train set</strong></td><td>Très efficace : tout le train contribue aux méta-features</td><td>Moins efficace : une partie est réservée au blend set</td></tr>
+    <tr><td><strong>Risque de fuite</strong></td><td>Faible si OOF correct</td><td>Faible si split propre</td></tr>
+    <tr><td><strong>Stabilité</strong></td><td>Généralement meilleure</td><td>Plus dépendante du split hold-out</td></tr>
+    <tr><td><strong>Coût</strong></td><td>Élevé : M × K entraînements</td><td>Plus faible</td></tr>
+    <tr><td><strong>Simplicité</strong></td><td>Moyenne</td><td>Élevée</td></tr>
+    <tr><td><strong>Usage recommandé</strong></td><td>Rapport académique rigoureux</td><td>Prototype rapide, baseline comparative</td></tr>
+  </table></div>
+  <div class="callout green"><strong>Conclusion :</strong> pour un devoir de Master strict, le stacking OOF est la méthode principale à défendre. Le blending est une variante importante à comparer, mais plus fragile statistiquement.</div>
+</section>
+<section class="section">
+  <h2>3. Mathématique du blending</h2>
+  <div class="math-box"><div class="math-label">Découpage</div><div class="formula">D_train = D_base ∪ D_blend</div></div>
+  <div class="math-box"><div class="math-label">Méta-features de blending</div><div class="formula">Z_blend = [h_1(D_blend), h_2(D_blend), ..., h_M(D_blend)]</div></div>
+  <div class="math-box"><div class="math-label">Meta-learner</div><div class="formula">ŷ = g(Z_blend)</div></div>
+</section>
+<section class="section">
+  <h2>4. Quand utiliser quoi ?</h2>
+  <div class="grid">
+    <div class="card cyan"><h3>Choisir Stacking</h3><p>Dataset petit ou moyen, rapport académique, besoin de robustesse, validation expérimentale stricte.</p></div>
+    <div class="card orange"><h3>Choisir Blending</h3><p>Prototype rapide, compétition, dataset très grand, coût OOF trop élevé.</p></div>
+  </div>
+</section>
+
+      <div class="pager"><a href="02_stacking_oof.html"><small>← Page précédente</small>Stacking & OOF</a><a href="04_math_pseudocode.html" style="text-align:right"><small>Page suivante →</small>Math & Pseudo-code</a></div>
+    </div>
+  </main>
+</div>
+<script src="../script.js"></script>
+</body></html>

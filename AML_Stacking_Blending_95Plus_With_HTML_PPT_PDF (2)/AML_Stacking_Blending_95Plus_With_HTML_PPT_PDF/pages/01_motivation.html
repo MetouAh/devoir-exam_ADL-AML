@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Motivation et méthodes d’ensemble — AML Stacking & Blending</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+<body>
+<div class="progress"></div>
+<div class="page-shell">
+  <aside class="sidebar">
+    <div class="brand"><div class="brand-mark"></div><div><h1>AML · Stacking</h1><p>Master IA · Paire 4</p></div></div>
+    <div class="side-actions">
+      <button class="btn ghost mobile-menu">Menu</button>
+      <button class="btn ghost" onclick="toggleTheme()">Mode clair/sombre</button>
+      <a class="btn green" href="../notebooks/05_master_complete_colab.ipynb">Notebook complet</a>
+    </div>
+    <div class="nav">
+      <div class="nav-group-title">Pages du cours</div>
+      <a class="" href="../index.html">Accueil</a>
+<a class="active" href="01_motivation.html">1 · Motivation & Ensemble</a>
+<a class="" href="02_stacking_oof.html">2 · Stacking & OOF</a>
+<a class="" href="03_blending_comparison.html">3 · Blending & Comparaison</a>
+<a class="" href="04_math_pseudocode.html">4 · Math & Pseudo-code</a>
+<a class="" href="05_implementation.html">5 · Implémentations</a>
+<a class="" href="06_experiments.html">6 · Expériences</a>
+<a class="" href="07_aml_adl_bridge.html">7 · Pont AML × ADL</a>
+<a class="" href="08_questions_references.html">8 · Questions & Références</a>
+      <div class="nav-group-title">Code & livrables</div>
+      <a href="../src/stacking_from_scratch.py">CustomStackingClassifier</a>
+      <a href="../src/blending.py">CustomBlendingClassifier</a>
+      <a href="../README.md">README</a>
+      <a href="../references.md">Bibliographie</a>
+    </div>
+  </aside>
+  <main class="main">
+    <div class="topbar">
+      <button class="btn ghost mobile-menu">☰</button>
+      <div class="breadcrumbs">AML × ADL / Stacking et Blending / Motivation et méthodes d’ensemble</div>
+      <button class="btn ghost" onclick="toggleTheme()">☼</button>
+    </div>
+    <div class="container">
+      <section class="section">
+        <div class="eyebrow">Advanced Machine Learning</div>
+        <h2>Motivation et méthodes d’ensemble</h2>
+        <p class="lead">Comprendre pourquoi le vote majoritaire ne suffit pas et pourquoi le stacking devient une solution de méta-apprentissage plus flexible.</p>
+      </section>
+
+<section class="section">
+  <h2>1. Pourquoi combiner plusieurs modèles ?</h2>
+  <p>Dans un problème réel, aucun modèle n’est universellement supérieur. Un modèle linéaire peut être robuste et interprétable, un SVM peut capturer des frontières complexes, une forêt aléatoire peut exploiter les interactions non linéaires, et un gradient boosting peut réduire fortement le biais. Les méthodes d’ensemble exploitent cette complémentarité.</p>
+  <div class="grid">
+    <div class="card cyan"><h3>Bagging</h3><p>Réduit la variance par bootstrap et agrégation parallèle. Exemple : Random Forest.</p></div>
+    <div class="card green"><h3>Boosting</h3><p>Construit des modèles successifs qui corrigent les erreurs des précédents. Exemple : XGBoost, LightGBM.</p></div>
+    <div class="card orange"><h3>Voting</h3><p>Combine par règle fixe : majorité ou moyenne des probabilités.</p></div>
+    <div class="card violet"><h3>Stacking</h3><p>Apprend une règle de combinaison via un meta-learner entraîné sur des méta-features.</p></div>
+  </div>
+</section>
+<section class="section">
+  <h2>2. Limites du vote majoritaire</h2>
+  <p>Le voting suppose que tous les modèles méritent le même poids. Cette hypothèse est trop forte : certains modèles sont performants dans certaines régions des données et faibles ailleurs. Le stacking apprend automatiquement cette pondération, voire des interactions entre prédictions.</p>
+  <div class="table-wrap"><table>
+    <tr><th>Méthode</th><th>Règle</th><th>Avantage</th><th>Limite</th></tr>
+    <tr><td><strong>Hard Voting</strong></td><td>Classe majoritaire</td><td>Simple et robuste</td><td>Ignore la confiance</td></tr>
+    <tr><td><strong>Soft Voting</strong></td><td>Moyenne des probabilités</td><td>Utilise plus d’information</td><td>Sensible à la calibration</td></tr>
+    <tr><td><strong>Stacking</strong></td><td>Combinaison apprise</td><td>Flexible et puissant</td><td>Plus coûteux, exige OOF</td></tr>
+  </table></div>
+  <div class="callout green"><strong>Phrase clé :</strong> le stacking est une généralisation apprise du voting : au lieu de fixer les poids, il les apprend à partir des prédictions des base learners.</div>
+</section>
+
+<section class="section">
+  <h2>3. Applications scientifiques et industrielles</h2>
+  <p>Cette partie reste volontairement générale et scientifique : elle montre où le stacking est utile sans ancrage géographique imposé.</p>
+  <div class="grid">
+    <div class="card cyan"><h3>Santé numérique</h3><p>Prédiction du risque, aide au triage, modèles tabulaires hospitaliers. Base learners : Logistic Regression, Random Forest, SVM, XGBoost. Meta-learner : Logistic Regression régularisée pour garder l’interprétabilité.</p></div>
+    <div class="card green"><h3>Industrie & contrôle qualité</h3><p>Détection d’anomalies, prédiction de défauts, scoring de qualité. Le stacking combine modèles robustes aux outliers et modèles non linéaires.</p></div>
+    <div class="card violet"><h3>Finance & décision</h3><p>Fraude, scoring, risque. Le stacking peut améliorer la robustesse, mais doit être accompagné de calibration, audit et interprétabilité.</p></div>
+  </div>
+</section>
+
+
+      <div class="pager"><a href="../index.html"><small>← Page précédente</small>Accueil</a><a href="02_stacking_oof.html" style="text-align:right"><small>Page suivante →</small>Stacking & OOF</a></div>
+    </div>
+  </main>
+</div>
+<script src="../script.js"></script>
+</body></html>

@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Questions, bibliographie et annexes — AML Stacking & Blending</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+<body>
+<div class="progress"></div>
+<div class="page-shell">
+  <aside class="sidebar">
+    <div class="brand"><div class="brand-mark"></div><div><h1>AML · Stacking</h1><p>Master IA · Paire 4</p></div></div>
+    <div class="side-actions">
+      <button class="btn ghost mobile-menu">Menu</button>
+      <button class="btn ghost" onclick="toggleTheme()">Mode clair/sombre</button>
+      <a class="btn green" href="../notebooks/05_master_complete_colab.ipynb">Notebook complet</a>
+    </div>
+    <div class="nav">
+      <div class="nav-group-title">Pages du cours</div>
+      <a class="" href="../index.html">Accueil</a>
+<a class="" href="01_motivation.html">1 · Motivation & Ensemble</a>
+<a class="" href="02_stacking_oof.html">2 · Stacking & OOF</a>
+<a class="" href="03_blending_comparison.html">3 · Blending & Comparaison</a>
+<a class="" href="04_math_pseudocode.html">4 · Math & Pseudo-code</a>
+<a class="" href="05_implementation.html">5 · Implémentations</a>
+<a class="" href="06_experiments.html">6 · Expériences</a>
+<a class="" href="07_aml_adl_bridge.html">7 · Pont AML × ADL</a>
+<a class="active" href="08_questions_references.html">8 · Questions & Références</a>
+      <div class="nav-group-title">Code & livrables</div>
+      <a href="../src/stacking_from_scratch.py">CustomStackingClassifier</a>
+      <a href="../src/blending.py">CustomBlendingClassifier</a>
+      <a href="../README.md">README</a>
+      <a href="../references.md">Bibliographie</a>
+    </div>
+  </aside>
+  <main class="main">
+    <div class="topbar">
+      <button class="btn ghost mobile-menu">☰</button>
+      <div class="breadcrumbs">AML × ADL / Stacking et Blending / Questions, bibliographie et annexes</div>
+      <button class="btn ghost" onclick="toggleTheme()">☼</button>
+    </div>
+    <div class="container">
+      <section class="section">
+        <div class="eyebrow">Advanced Machine Learning</div>
+        <h2>Questions, bibliographie et annexes</h2>
+        <p class="lead">Préparer les questions probables du professeur et relier clairement le contenu aux sources primaires.</p>
+      </section>
+
+<section class="section">
+  <h2>1. Questions possibles du professeur</h2>
+  <div class="accordion">
+    <details open><summary>1. Pourquoi utiliser OOF dans le stacking ?</summary><p>Pour que chaque prédiction utilisée par le meta-learner soit produite par un modèle qui n’a jamais vu l’observation correspondante.</p></details>
+    <details><summary>2. Différence entre stacking et blending ?</summary><p>Stacking utilise KFold OOF ; blending utilise un hold-out blend set.</p></details>
+    <details><summary>3. Pourquoi le voting peut-il être moins performant ?</summary><p>Il impose une règle fixe et ne sait pas apprendre la fiabilité relative des modèles.</p></details>
+    <details><summary>4. Pourquoi predict_proba plutôt que predict ?</summary><p>Les probabilités contiennent une information de confiance plus riche que la classe prédite.</p></details>
+    <details><summary>5. Le stacking gagne-t-il toujours ?</summary><p>Non. Il dépend de la diversité des base learners, de la qualité des OOF et du choix du meta-learner.</p></details>
+    <details><summary>6. Pourquoi faire 30 seeds ?</summary><p>Pour mesurer la stabilité et éviter de conclure à partir d’un split chanceux.</p></details>
+    <details><summary>7. Quel lien entre Dropout et Stacking ?</summary><p>Stacking combine explicitement plusieurs modèles ; Dropout combine implicitement des sous-réseaux.</p></details>
+    <details><summary>8. Quel est le risque principal du blending ?</summary><p>La forte dépendance au hold-out set choisi.</p></details>
+    <details><summary>9. Quel meta-learner choisir ?</summary><p>Commencer par Logistic Regression régularisée, puis tester XGBoost ou LightGBM.</p></details>
+    <details><summary>10. Comment déployer un stacking model ?</summary><p>Sauvegarder ensemble les preprocessors, base learners et meta-learner avec joblib/pickle, et garantir la même pipeline en production.</p></details>
+  </div>
+</section>
+<section class="section">
+  <h2>2. Bibliographie essentielle et sources de confiance</h2>
+  <div class="table-wrap"><table>
+    <tr><th>Source</th><th>Contribution</th><th>Pertinence</th></tr>
+    <tr><td><strong>Wolpert, 1992</strong></td><td>Stacked Generalization</td><td>Fondation théorique du stacking.</td></tr>
+    <tr><td><strong>Breiman, 1996</strong></td><td>Stacked Regressions</td><td>Combinaison de modèles via validation croisée.</td></tr>
+    <tr><td><strong>Géron, 2023</strong></td><td>Hands-On ML</td><td>Référence officielle AML pour ensembles.</td></tr>
+    <tr><td><strong>scikit-learn</strong></td><td>StackingClassifier</td><td>Implémentation de production.</td></tr>
+    <tr><td><strong>mlxtend</strong></td><td>StackingCVClassifier</td><td>Stacking avec cross-validation explicite.</td></tr>
+    <tr><td><strong>UCI Wine Quality</strong></td><td>Dataset public reconnu</td><td>Expérience principale du notebook.</td></tr>
+    <tr><td><strong>Gal & Ghahramani, 2016</strong></td><td>Dropout bayésien</td><td>Pont ADL.</td></tr>
+  </table></div>
+  <a class="btn gold" href="../references.md">Ouvrir la bibliographie complète</a>
+</section>
+<section class="section">
+  <h2>3. Annexes</h2>
+  <div class="grid">
+    <a class="card cyan" href="../docs/rapport_academique.md" style="text-decoration:none"><h3>Rapport académique</h3><p>Note de synthèse structurée.</p></a>
+    <a class="card green" href="../docs/questions_professeur.md" style="text-decoration:none"><h3>Questions/Réponses</h3><p>20 questions probables.</p></a>
+    <a class="card violet" href="../docs/plan_slides.md" style="text-decoration:none"><h3>Plan slides</h3><p>Structure possible pour la présentation.</p></a>
+    <a class="card orange" href="../README.md" style="text-decoration:none"><h3>README</h3><p>Instructions d’utilisation.</p></a>
+  </div>
+</section>
+
+      <div class="pager"><a href="07_aml_adl_bridge.html"><small>← Page précédente</small>Pont AML × ADL</a><a href="../index.html" style="text-align:right"><small>Page suivante →</small>Retour accueil</a></div>
+    </div>
+  </main>
+</div>
+<script src="../script.js"></script>
+</body></html>

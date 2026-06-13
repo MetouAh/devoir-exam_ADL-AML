@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AML — Stacking et Blending | Version finale interactive</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="progress"></div>
+<main class="main">
+  <div class="topbar">
+    <div class="breadcrumbs">Master 1 IA · Advanced Machine Learning · C25M1221 · Version finale</div>
+    <button class="btn ghost" onclick="toggleTheme()">Mode clair/sombre</button>
+  </div>
+
+  <section class="hero">
+    <div class="hero-card">
+      <div class="eyebrow">Advanced Machine Learning · Paire 4</div>
+      <h2>Stacking et <span class="gradient-text">Blending</span></h2>
+      <p>
+        Support pédagogique interactif multi-pages, clair, scientifique et moderne :
+        meta-learning, validation Out-of-Fold, comparaison expérimentale rigoureuse,
+        notebooks Colab et clean code Python.
+      </p>
+      <div class="hero-links">
+        <a class="btn" href="pages/01_motivation.html">Commencer le cours</a>
+        <a class="btn violet" href="pages/03_blending_comparison.html">Comparer Stacking / Blending</a>
+        <a class="btn green" href="notebooks/05_master_complete_colab.ipynb">Notebook Colab complet</a>
+        <a class="btn orange" href="docs/checklist_officiel.md">Checklist officielle</a>
+      </div>
+      <div style="margin-top:24px">
+        <span class="tag">StackingClassifier</span>
+        <span class="tag">StackingCVClassifier</span>
+        <span class="tag">Custom OOF</span>
+        <span class="tag">Wine Quality UCI</span>
+        <span class="tag">30 seeds</span>
+        <span class="tag">Comparaison AML × ADL</span>
+      </div>
+    </div>
+  </section>
+
+  <div class="container">
+    <section class="section">
+      <h2>Page de présentation</h2>
+      <p class="lead">
+        Cette version finale est organisée en pages séparées avec des URLs internes.
+        Le style est volontairement clair, harmonieux et scientifique pour éviter l’effet sombre/chargé des versions précédentes.
+      </p>
+      <div class="cards cols-4" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:14px;margin-top:18px">
+        <div class="card"><h3>8 pages</h3><p>Navigation séparée et lisible.</p></div>
+        <div class="card"><h3>5 notebooks</h3><p>Colab-ready, dont un notebook maître.</p></div>
+        <div class="card"><h3>5 fichiers Python</h3><p>Clean code prêt à expliquer.</p></div>
+        <div class="card"><h3>25 Q/R</h3><p>Questions probables du professeur.</p></div>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>Parcours du document</h2>
+      <div class="grid">
+        <a class="card cyan" href="pages/01_motivation.html" style="text-decoration:none"><h3>01. Motivation & Ensemble</h3><p>Objectifs, limites du voting et motivation du stacking.</p></a>
+        <a class="card violet" href="pages/02_stacking_oof.html" style="text-decoration:none"><h3>02. Stacking & OOF</h3><p>Architecture à deux niveaux et validation anti-fuite.</p></a>
+        <a class="card orange" href="pages/03_blending_comparison.html" style="text-decoration:none"><h3>03. Blending & Comparaison</h3><p>Différence claire entre OOF stacking et hold-out blending.</p></a>
+        <a class="card green" href="pages/04_math_pseudocode.html" style="text-decoration:none"><h3>04. Mathématiques</h3><p>Z[i,j], ŷ=g(Z), risque empirique et pseudo-code.</p></a>
+        <a class="card cyan" href="pages/05_implementation.html" style="text-decoration:none"><h3>05. Implémentations</h3><p>From scratch, scikit-learn, mlxtend, XGBoost et LightGBM.</p></a>
+        <a class="card violet" href="pages/06_experiments.html" style="text-decoration:none"><h3>06. Expériences</h3><p>Wine Quality, Best Single, Voting, Stacking, Blending, 30 seeds.</p></a>
+        <a class="card green" href="pages/07_aml_adl_bridge.html" style="text-decoration:none"><h3>07. Pont AML × ADL</h3><p>Dropout ≈ ensemble bayésien implicite et régularisation neuronale.</p></a>
+        <a class="card orange" href="pages/08_questions_references.html" style="text-decoration:none"><h3>08. Questions & Références</h3><p>Questions professeur, rapport, bibliographie et annexes.</p></a>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>Livrables inclus</h2>
+      <div class="grid">
+        <div class="card"><h3>HTML/CSS/JS</h3><p>Design clair, responsive, sidebar, progress bar, boutons copier, thème clair/sombre.</p></div>
+        <div class="card"><h3>Notebooks Colab</h3><p>From scratch, sklearn/mlxtend, blending, stabilité 30 seeds et notebook complet.</p></div>
+        <div class="card"><h3>Code Python</h3><p>CustomStackingClassifier, CustomBlendingClassifier, évaluation, utils et runner.</p></div>
+        <div class="card"><h3>Documents</h3><p>Rapport académique, questions professeur, plan slides, bibliographie et checklist.</p></div>
+      </div>
+    </section>
+  </div>
+
+
+    <section class="section">
+      <h2>PowerPoint / PDF ajoutés</h2>
+      <p class="lead">Cette version contient maintenant un support de présentation officiel : une version PowerPoint conçue en HTML/CSS, un vrai fichier PPTX et un PDF exporté depuis le design HTML/CSS.</p>
+      <div class="grid">
+        <a class="card cyan" href="slides/html_powerpoint/presentation_powerpoint_html.html" style="text-decoration:none"><h3>PowerPoint HTML/CSS</h3><p>Présentation interactive 25 slides, navigation clavier et design clair.</p></a>
+        <a class="card violet" href="slides/powerpoint/AML_Stacking_Blending_25_slides.pptx" style="text-decoration:none"><h3>Fichier PowerPoint PPTX</h3><p>Support officiel 25 slides, ouvrable dans PowerPoint.</p></a>
+        <a class="card orange" href="slides/pdf/AML_Stacking_Blending_25_slides_HTML_CSS.pdf" style="text-decoration:none"><h3>PDF</h3><p>Version PDF générée depuis le design HTML/CSS.</p></a>
+      </div>
+    </section>
+
+  <div class="footer">AML — Stacking et Blending · Mini-site final light interactive</div>
+</main>
+<script src="script.js"></script>
+</body>
+</html>

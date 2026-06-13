@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Fondements mathématiques et pseudo-code — AML Stacking & Blending</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+<body>
+<div class="progress"></div>
+<div class="page-shell">
+  <aside class="sidebar">
+    <div class="brand"><div class="brand-mark"></div><div><h1>AML · Stacking</h1><p>Master IA · Paire 4</p></div></div>
+    <div class="side-actions">
+      <button class="btn ghost mobile-menu">Menu</button>
+      <button class="btn ghost" onclick="toggleTheme()">Mode clair/sombre</button>
+      <a class="btn green" href="../notebooks/05_master_complete_colab.ipynb">Notebook complet</a>
+    </div>
+    <div class="nav">
+      <div class="nav-group-title">Pages du cours</div>
+      <a class="" href="../index.html">Accueil</a>
+<a class="" href="01_motivation.html">1 · Motivation & Ensemble</a>
+<a class="" href="02_stacking_oof.html">2 · Stacking & OOF</a>
+<a class="" href="03_blending_comparison.html">3 · Blending & Comparaison</a>
+<a class="active" href="04_math_pseudocode.html">4 · Math & Pseudo-code</a>
+<a class="" href="05_implementation.html">5 · Implémentations</a>
+<a class="" href="06_experiments.html">6 · Expériences</a>
+<a class="" href="07_aml_adl_bridge.html">7 · Pont AML × ADL</a>
+<a class="" href="08_questions_references.html">8 · Questions & Références</a>
+      <div class="nav-group-title">Code & livrables</div>
+      <a href="../src/stacking_from_scratch.py">CustomStackingClassifier</a>
+      <a href="../src/blending.py">CustomBlendingClassifier</a>
+      <a href="../README.md">README</a>
+      <a href="../references.md">Bibliographie</a>
+    </div>
+  </aside>
+  <main class="main">
+    <div class="topbar">
+      <button class="btn ghost mobile-menu">☰</button>
+      <div class="breadcrumbs">AML × ADL / Stacking et Blending / Fondements mathématiques et pseudo-code</div>
+      <button class="btn ghost" onclick="toggleTheme()">☼</button>
+    </div>
+    <div class="container">
+      <section class="section">
+        <div class="eyebrow">Advanced Machine Learning</div>
+        <h2>Fondements mathématiques et pseudo-code</h2>
+        <p class="lead">Notation complète : dataset, modèles de base, meta-learner, matrice Z, extension probabiliste et risque empirique.</p>
+      </section>
+
+<section class="section">
+  <h2>1. Notation</h2>
+  <div class="math-box"><div class="math-label">Dataset</div><div class="formula">D = {(x_i, y_i)} pour i = 1,...,n</div></div>
+  <div class="math-box"><div class="math-label">Modèles</div><div class="formula">h_1, h_2, ..., h_M : modèles de base
+g : meta-learner
+K : nombre de folds</div></div>
+</section>
+<section class="section">
+  <h2>2. Construction OOF</h2>
+  <p>Pour chaque modèle de base h_j et chaque fold k, on entraîne h_j sur toutes les données sauf D_k, puis on prédit uniquement D_k.</p>
+  <div class="math-box"><div class="math-label">Modèle entraîné sans le fold k</div><div class="formula">h_j^(-k) entraîné sur D \ D_k</div></div>
+  <div class="math-box"><div class="math-label">Méta-représentation</div><div class="formula">Z[i,j] = h_j^(-k)(x_i), pour x_i ∈ D_k</div></div>
+</section>
+<section class="section">
+  <h2>3. Matrice des meta-features</h2>
+  <div class="math-box"><div class="math-label">Sorties scalaires</div><div class="formula">Z ∈ R^(n × M)</div></div>
+  <div class="math-box"><div class="math-label">Sorties probabilistes multi-classes</div><div class="formula">Z[i,j,c] = P_j(y = c | x_i)
+Z ∈ R^(n × M × C)</div></div>
+</section>
+<section class="section">
+  <h2>4. Apprentissage du meta-learner</h2>
+  <div class="math-box"><div class="math-label">Risque empirique régularisé</div><div class="formula">g* = argmin_g Σ_i L(y_i, g(Z_i)) + λ Ω(g)</div></div>
+  <p>La régularisation Ω(g) empêche le meta-learner de sur-apprendre les erreurs des base learners. En pratique, une régression logistique régularisée est souvent un excellent choix initial.</p>
+</section>
+<section class="section">
+  <h2>5. Pseudo-code complet</h2>
+  <div class="code-actions"><button class="btn" onclick="copyCode('pseudo')">Copier</button></div>
+  <pre id="pseudo">Entrée : dataset D, base learners h_1...h_M, meta-learner g, K folds
+
+Initialiser Z ∈ R^(n × M)
+
+Pour chaque modèle h_j :
+    Pour chaque fold k :
+        entraîner h_j^(-k) sur D \ D_k
+        prédire les exemples de D_k
+        stocker les prédictions dans Z[:, j]
+
+Entraîner le meta-learner g sur Z
+
+Réentraîner chaque h_j sur tout D_train
+
+Pour un nouvel exemple x* :
+    z* = [h_1(x*), h_2(x*), ..., h_M(x*)]
+    retourner ŷ* = g(z*)</pre>
+</section>
+
+      <div class="pager"><a href="03_blending_comparison.html"><small>← Page précédente</small>Blending & Comparaison</a><a href="05_implementation.html" style="text-align:right"><small>Page suivante →</small>Implémentations</a></div>
+    </div>
+  
+<section class="section">
+  <h2>Approfondissement mathématique — version soutenance</h2>
+  <p class="lead">Cette section renforce le contenu mathématique minimal : elle explique non seulement les formules, mais aussi leur rôle statistique dans la prévention de l'overfitting du meta-learner.</p>
+
+  <div class="math-box">
+    <div class="math-label">1. Données, base learners et folds</div>
+    <div class="formula">D = {(x_i, y_i)}_{i=1}^{n}
+H = {h_1, h_2, ..., h_M}
+K folds : D = D_1 ∪ D_2 ∪ ... ∪ D_K</div>
+  </div>
+
+  <div class="math-box">
+    <div class="math-label">2. Construction Out-of-Fold exacte</div>
+    <div class="formula">Pour chaque modèle h_j et chaque fold k :
+h_j^{(-k)} = train(h_j, D \ D_k)
+
+Pour chaque x_i ∈ D_k :
+Z[i,j] = h_j^{(-k)}(x_i)</div>
+  </div>
+
+  <div class="math-box">
+    <div class="math-label">3. Cas probabiliste multi-classes</div>
+    <div class="formula">Z[i,j,c] = P_j(y=c | x_i)
+
+Z ∈ R^{n × M × C}
+
+Flatten(Z_i) = [P_1(c_1|x_i), ..., P_M(c_C|x_i)]</div>
+  </div>
+
+  <div class="math-box">
+    <div class="math-label">4. Risque empirique régularisé</div>
+    <div class="formula">g* = argmin_g  Σ_i L(y_i, g(Z_i)) + λ Ω(g)
+
+L : cross-entropy ou log-loss
+Ω(g) : pénalisation L2, profondeur limitée, shrinkage
+λ : contrôle de complexité du meta-learner</div>
+  </div>
+
+  <div class="callout red">
+    <strong>Pourquoi la fuite est grave ?</strong> Si Z est construit avec des prédictions in-sample, alors Z[i,j] ≈ y_i pour certains modèles très flexibles. Le meta-learner apprend alors la capacité du modèle à mémoriser le train set, pas sa capacité à généraliser. Le score test devient instable et trop optimiste.
+  </div>
+
+  <div class="table-wrap">
+    <table>
+      <tr><th>Situation</th><th>Effet statistique</th><th>Solution</th></tr>
+      <tr><td><strong>Prédictions in-sample</strong></td><td>Biais optimiste, overfitting du niveau 1</td><td>OOF strict</td></tr>
+      <tr><td><strong>Base learners très corrélés</strong></td><td>Gain faible par rapport au Best Single</td><td>Diversifier les familles de modèles</td></tr>
+      <tr><td><strong>Meta-learner trop complexe</strong></td><td>Variance élevée sur Z</td><td>Logistic Regression régularisée comme baseline</td></tr>
+      <tr><td><strong>Probabilités non calibrées</strong></td><td>Soft voting et stacking probabiliste biaisés</td><td>CalibratedClassifierCV ou calibration post-hoc</td></tr>
+    </table>
+  </div>
+</section>
+
+</main>
+</div>
+<script src="../script.js"></script>
+</body></html>

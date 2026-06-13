@@ -1,0 +1,989 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Régularisation Neuronale — Deep Learning</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#07091A;--surf:#111830;--surf2:#1A2340;--surf3:#222E4A;
+  --cyan:#00D4FF;--violet:#8B6FFF;--green:#00FFB0;--orange:#FF9054;--pink:#FF4FAD;
+  --text:#EEF2FF;--muted:#9AA8C8;--border:rgba(0,212,255,0.13);
+  --ff-d:'Space Grotesk',sans-serif;--ff-b:'Inter',sans-serif;--ff-m:'JetBrains Mono',monospace;
+}
+
+/* ── FULLSCREEN LAYOUT ── */
+html,body{width:100%;height:100%;overflow:hidden;background:var(--bg);color:var(--text);font-family:var(--ff-b);}
+.slide{display:none;width:100vw;height:100vh;position:relative;overflow:hidden;}
+.slide.active{display:flex;flex-direction:column;animation:fadeUp .3s ease;}
+/* Slide 1 hero — center everything */
+#s1.active{justify-content:center;align-items:center;text-align:center;background:radial-gradient(ellipse at 50% 35%,#1A2340 0%,var(--bg) 68%);}
+@keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+
+/* ── PROGRESS ── */
+#progress{position:fixed;top:0;left:0;height:3px;background:linear-gradient(90deg,var(--cyan),var(--violet));transition:width .4s ease;z-index:300;box-shadow:0 0 10px var(--cyan);}
+
+/* ── NAV BAR ── */
+#nav{
+  position:fixed;bottom:18px;left:50%;transform:translateX(-50%);
+  display:flex;align-items:center;gap:8px;
+  background:rgba(17,24,48,0.95);border:1px solid var(--border);
+  padding:8px 18px;border-radius:50px;backdrop-filter:blur(20px);z-index:200;
+  box-shadow:0 8px 32px rgba(0,0,0,0.6);
+}
+#nav button{
+  background:none;border:1px solid var(--border);color:var(--muted);
+  padding:5px 14px;border-radius:20px;cursor:pointer;
+  font-family:var(--ff-b);font-size:12px;transition:all .2s;
+}
+#nav button:hover{background:var(--cyan);color:#000;border-color:var(--cyan);}
+#counter{font-family:var(--ff-m);font-size:11px;color:var(--muted);min-width:50px;text-align:center;}
+
+/* ── SLIDE HEADER ── */
+.shd{
+  padding:18px 48px 14px;
+  display:flex;align-items:center;gap:10px;flex-shrink:0;
+  border-bottom:1px solid var(--border);
+  background:linear-gradient(180deg,rgba(17,24,48,0.7) 0%,transparent 100%);
+}
+.badge{font-family:var(--ff-m);font-size:10px;font-weight:700;padding:3px 10px;border-radius:4px;letter-spacing:.1em;text-transform:uppercase;}
+.bc{background:rgba(0,212,255,.15);color:var(--cyan);border:1px solid rgba(0,212,255,.45);}
+.bv{background:rgba(139,111,255,.15);color:var(--violet);border:1px solid rgba(139,111,255,.45);}
+.bg{background:rgba(0,255,176,.15);color:var(--green);border:1px solid rgba(0,255,176,.45);}
+.bo{background:rgba(255,144,84,.15);color:var(--orange);border:1px solid rgba(255,144,84,.45);}
+.bp{background:rgba(255,79,173,.15);color:var(--pink);border:1px solid rgba(255,79,173,.45);}
+
+/* Slide subtitle (header) — made clearly visible */
+.stitle{font-family:var(--ff-d);font-size:15px;font-weight:500;color:#CBD5F0;}
+
+/* ── SLIDE BODY ── */
+.sbody{flex:1;overflow-y:auto;padding:20px 48px 72px;display:flex;flex-direction:column;gap:16px;}
+.sbody::-webkit-scrollbar{width:4px;}
+.sbody::-webkit-scrollbar-thumb{background:rgba(0,212,255,.2);border-radius:2px;}
+
+/* ── SLIDE MAIN TITLE (h2) — clearly bright ── */
+.sh{font-family:var(--ff-d);font-size:28px;font-weight:700;line-height:1.2;margin-bottom:2px;color:#FFFFFF;}
+.sh .cc{color:var(--cyan)}.sh .cv{color:#A890FF}.sh .cg{color:var(--green)}.sh .co{color:var(--orange)}.sh .cp{color:var(--pink)}
+.ssub{color:var(--muted);font-size:13px;margin-bottom:12px;font-style:italic;}
+
+/* ── HERO SLIDE ── */
+.hero{justify-content:center;align-items:center;text-align:center;background:radial-gradient(ellipse at 50% 35%,#1A2340 0%,var(--bg) 68%);}
+.hero-content{max-width:720px;z-index:2;position:relative;padding:32px 24px;}
+.eyebrow{font-family:var(--ff-m);font-size:11px;color:var(--cyan);letter-spacing:.22em;text-transform:uppercase;margin-bottom:18px;opacity:.9;}
+.htitle{font-family:var(--ff-d);font-size:54px;font-weight:700;line-height:1.1;margin-bottom:16px;background:linear-gradient(135deg,#FFFFFF 30%,var(--cyan) 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+.hsub{color:#B0BADA;font-size:15px;line-height:1.8;max-width:540px;margin:0 auto 26px;}
+.htags{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;}
+.htag{font-family:var(--ff-m);font-size:11px;padding:4px 12px;border-radius:20px;border:1px solid rgba(0,212,255,.25);color:#9AA8C8;background:rgba(255,255,255,.03);}
+#neuron-canvas{position:absolute;inset:0;z-index:0;opacity:.5;}
+
+/* ── LAYOUT — vertical single column ── */
+.two{display:flex;flex-direction:column;gap:16px;}
+.three{display:flex;flex-direction:column;gap:12px;}
+.grid{display:flex;flex-direction:column;gap:12px;}
+.g2{flex-direction:column;}
+.g3{flex-direction:column;}
+
+/* ── CARDS ── */
+.card{background:var(--surf);border:1px solid var(--border);border-radius:12px;padding:16px 18px;}
+.card.gc{border-color:rgba(0,212,255,.3);background:rgba(0,212,255,.03);}
+.card.gv{border-color:rgba(139,111,255,.3);background:rgba(139,111,255,.03);}
+.card.gg{border-color:rgba(0,255,176,.3);background:rgba(0,255,176,.03);}
+.card.go{border-color:rgba(255,144,84,.3);background:rgba(255,144,84,.03);}
+.card.gp{border-color:rgba(255,79,173,.3);background:rgba(255,79,173,.03);}
+
+/* Card title — clearly visible, not dark */
+.ct{font-family:var(--ff-d);font-size:13px;font-weight:600;margin-bottom:7px;color:#FFFFFF;}
+.ct.cc{color:var(--cyan)}.ct.cv{color:#B8A8FF}.ct.cg{color:var(--green)}.ct.co{color:var(--orange)}.ct.cp{color:var(--pink)}
+
+.card p,.card li{font-size:13px;line-height:1.7;color:var(--muted);}
+.card ul{padding-left:15px;}
+.card li{margin-bottom:3px;}
+.card p strong,.card li strong{color:var(--text);}
+
+/* ── MATH BOX ── */
+.mbox{background:#060B1A;border:1px solid rgba(139,111,255,.45);border-radius:10px;padding:18px 20px;position:relative;overflow:hidden;}
+.mbox::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--violet),var(--cyan));}
+.mlabel{font-family:var(--ff-m);font-size:10px;color:#B8A8FF;text-transform:uppercase;letter-spacing:.12em;margin-bottom:12px;}
+.formula{font-family:var(--ff-m);font-size:15px;font-weight:500;color:#E2D8FF;line-height:2.1;white-space:pre-wrap;}
+.fc{color:var(--cyan)}.fv{color:var(--green)}.fo{color:var(--orange)}.fp{color:var(--pink)}
+
+/* ── NOTATION TABLE ── */
+.ntable{width:100%;border-collapse:collapse;margin-top:10px;}
+.ntable tr{border-bottom:1px solid rgba(255,255,255,.05);}
+.ntable tr:last-child{border-bottom:none;}
+.ntable td{padding:6px 10px;font-size:12.5px;vertical-align:top;}
+.ntable .sym{font-family:var(--ff-m);font-size:12px;color:var(--cyan);font-weight:700;white-space:nowrap;min-width:70px;}
+.ntable .desc{color:var(--muted);line-height:1.6;}
+.ntable .desc strong{color:#E0E8FF;}
+
+/* ── CODE BLOCK ── */
+.codebox{background:#030712;border:1px solid rgba(0,212,255,.2);border-radius:10px;overflow:hidden;}
+.code-header{background:rgba(0,212,255,.07);padding:8px 14px;display:flex;align-items:center;justify-content:space-between;}
+.code-lang{font-family:var(--ff-m);font-size:10px;color:var(--cyan);text-transform:uppercase;letter-spacing:.1em;}
+.code-label{font-family:var(--ff-m);font-size:10px;color:var(--muted);}
+pre{padding:14px 16px;overflow-x:auto;font-family:var(--ff-m);font-size:12px;line-height:1.75;color:#CBD5E0;}
+pre::-webkit-scrollbar{height:4px;}
+pre::-webkit-scrollbar-thumb{background:rgba(0,212,255,.2);}
+/* Syntax highlight classes */
+.kw{color:#FF9054;}   /* keywords: import, def, class, for, if, return */
+.fn{color:#00D4FF;}   /* function names */
+.st{color:#00FFB0;}   /* strings */
+.cm{color:#5A7085;font-style:italic;}  /* comments */
+.nb{color:#FF79C6;}   /* numbers / built-ins */
+.cl{color:#8B6FFF;}   /* class names */
+
+/* ── HIGHLIGHT BOX ── */
+.hl{border-left:3px solid var(--cyan);padding:11px 15px;background:rgba(0,212,255,.06);border-radius:0 8px 8px 0;font-size:13px;line-height:1.75;color:var(--muted);}
+.hl strong{color:#E0E8FF;}
+.hl.v{border-color:var(--violet);background:rgba(139,111,255,.06);}
+.hl.g{border-color:var(--green);background:rgba(0,255,176,.06);}
+.hl.o{border-color:var(--orange);background:rgba(255,144,84,.06);}
+
+/* ── TABLE ── */
+.stbl{width:100%;border-collapse:collapse;font-size:12.5px;}
+.stbl th{background:var(--surf2);padding:9px 12px;text-align:left;font-family:var(--ff-m);font-size:10px;text-transform:uppercase;letter-spacing:.08em;color:var(--cyan);border-bottom:1px solid var(--border);}
+.stbl td{padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.04);color:var(--muted);vertical-align:top;}
+.stbl td strong{color:var(--text);}
+.stbl tr:hover td{background:rgba(255,255,255,.02);}
+.tg{display:inline-block;padding:2px 7px;border-radius:4px;font-size:11px;font-family:var(--ff-m);}
+.tg.c{background:rgba(0,212,255,.15);color:var(--cyan);}
+.tg.g{background:rgba(0,255,176,.15);color:var(--green);}
+.tg.o{background:rgba(255,144,84,.15);color:var(--orange);}
+.tg.v{background:rgba(139,111,255,.15);color:var(--violet);}
+
+/* ── STEP LIST ── */
+.steps{display:flex;flex-direction:column;gap:8px;}
+.step{display:flex;gap:12px;align-items:flex-start;}
+.snum{flex-shrink:0;width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:var(--ff-m);font-size:11px;font-weight:700;}
+.snum.c{background:rgba(0,212,255,.15);color:var(--cyan);border:1px solid rgba(0,212,255,.5);}
+.snum.v{background:rgba(139,111,255,.15);color:var(--violet);border:1px solid rgba(139,111,255,.5);}
+.snum.g{background:rgba(0,255,176,.15);color:var(--green);border:1px solid rgba(0,255,176,.5);}
+.stxt{font-size:13px;line-height:1.7;color:var(--muted);padding-top:2px;}
+.stxt strong{color:var(--text);}
+
+/* ── NEURON DIAGRAM ── */
+.ndg{display:flex;align-items:center;justify-content:center;gap:0;padding:10px 0;}
+.nlyr{display:flex;flex-direction:column;align-items:center;gap:7px;}
+.nnd{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:var(--ff-m);font-size:9px;font-weight:700;}
+.nnd.on{background:rgba(0,212,255,.2);border:2px solid var(--cyan);color:var(--cyan);}
+.nnd.off{background:rgba(255,255,255,.03);border:2px dashed rgba(255,100,100,.35);color:rgba(255,100,100,.5);font-size:12px;}
+.nc{flex:1;height:1px;min-width:14px;max-width:26px;background:rgba(0,212,255,.2);}
+.nc.dead{background:rgba(255,255,255,.06);border-top:1px dashed rgba(255,100,100,.2);}
+.nlbl{font-family:var(--ff-m);font-size:9px;color:var(--muted);margin-top:3px;text-align:center;}
+
+/* ── PLAN GRID — vertical ── */
+.pgrid{display:flex;flex-direction:column;gap:9px;}
+.pitem{background:var(--surf);border:1px solid var(--border);border-radius:9px;padding:12px 14px;}
+.pttl{font-family:var(--ff-d);font-size:13px;font-weight:600;margin-bottom:2px;color:#DDEEFF;}
+.pdsc{font-size:11.5px;color:var(--muted);line-height:1.5;}
+
+/* ── REFERENCES ── */
+.rlist{display:flex;flex-direction:column;gap:8px;}
+.ritem{background:var(--surf);border:1px solid var(--border);border-radius:8px;padding:13px 15px;font-size:12.5px;line-height:1.65;color:var(--muted);}
+.ritem strong{color:#E0E8FF;font-family:var(--ff-d);}
+.ryear{font-family:var(--ff-m);font-size:10px;color:var(--violet);margin-left:6px;}
+
+@media(max-width:960px){
+  .sbody,.shd{padding-left:20px;padding-right:20px;}
+  .htitle{font-size:38px;}
+  .sh{font-size:22px;}
+}
+</style>
+</head>
+<body>
+<div id="progress"></div>
+
+<!-- ══════════════════════════════════════════
+     SLIDE 1 — COVER
+══════════════════════════════════════════ -->
+<div class="slide active" id="s1">
+  <canvas id="neuron-canvas"></canvas>
+  <div class="hero-content">
+    <div class="eyebrow">ADL · Paire 4 · Master 1 IA · 2025–2026</div>
+    <h1 class="htitle">Régularisation<br/>Neuronale</h1>
+    <p class="hsub">
+      Apprendre à généraliser plutôt qu'à mémoriser — les techniques fondamentales
+      qui permettent aux réseaux profonds de performer sur des données <strong style="color:#EEF2FF">jamais vues</strong>.
+    </p>
+    <div class="htags">
+      <span class="htag">Dropout</span>
+      <span class="htag">Batch Normalization</span>
+      <span class="htag">Layer Normalization</span>
+      <span class="htag">Label Smoothing</span>
+      <span class="htag">Data Augmentation</span>
+      <span class="htag">Weight Decay</span>
+      <span class="htag">MC-Dropout</span>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     SLIDE 2 — PLAN
+══════════════════════════════════════════ -->
+<div class="slide" id="s2">
+  <div class="shd"><span class="badge bc">Plan</span><span class="stitle">Structure de la présentation</span></div>
+  <div class="sbody">
+    <h2 class="sh">Plan de la <span class="cc">présentation</span></h2>
+    <p class="ssub">16 slides — 8 thèmes couverts selon la trame imposée</p>
+    <div class="pgrid">
+      <div class="pitem"><div class="pttl">1. Sur-apprentissage</div><div class="pdsc">Symptômes, causes, décomposition biais–variance</div></div>
+      <div class="pitem"><div class="pttl">2. Dropout</div><div class="pdsc">Algorithme, formule, interprétation bayésienne</div></div>
+      <div class="pitem"><div class="pttl">3. Batch Normalization</div><div class="pdsc">Internal covariate shift, formules, γ et β</div></div>
+      <div class="pitem"><div class="pttl">4. Layer Normalization</div><div class="pdsc">Formule, différences avec BatchNorm, Transformers</div></div>
+      <div class="pitem"><div class="pttl">5. Label Smoothing</div><div class="pdsc">Cible douce, formule mathématique, calibration</div></div>
+      <div class="pitem"><div class="pttl">6. Data Augmentation</div><div class="pdsc">Mixup, CutMix, RandAugment</div></div>
+      <div class="pitem"><div class="pttl">7. Weight Decay</div><div class="pdsc">Régularisation L1 / L2, lien avec MAP</div></div>
+      <div class="pitem"><div class="pttl">8. Ablation & Comparaison</div><div class="pdsc">Résultats expérimentaux sur Fashion-MNIST</div></div>
+      <div class="pitem"><div class="pttl">Lien ML · Stacking</div><div class="pdsc">Dropout ≈ ensemble bayésien implicite</div></div>
+    </div>
+    <div class="hl"><strong>Références :</strong> Srivastava et al. (2014) · Ioffe &amp; Szegedy (2015) · Ba et al. (2016) · Gal &amp; Ghahramani (2016) · Müller et al. (2019)</div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     SLIDE 3 — SUR-APPRENTISSAGE
+══════════════════════════════════════════ -->
+<div class="slide" id="s3">
+  <div class="shd"><span class="badge bc">Partie 1</span><span class="stitle">Sur-apprentissage dans les réseaux profonds</span></div>
+  <div class="sbody">
+    <h2 class="sh">Le problème : <span class="cc">sur-apprentissage</span></h2>
+    <p class="ssub">Pourquoi les réseaux profonds mémorisent-ils au lieu d'apprendre ?</p>
+    <div class="two">
+      <div style="display:flex;flex-direction:column;gap:12px;">
+        <div class="card gc">
+          <div class="ct cc">Définition</div>
+          <p>Un modèle est en <strong>sur-apprentissage</strong> quand il mémorise les exemples d'entraînement — y compris le bruit — sans capturer la structure générale. Il excelle sur les données vues, mais échoue sur les nouvelles.</p>
+        </div>
+        <div class="mbox">
+          <div class="mlabel">Décomposition Biais–Variance</div>
+          <div class="formula"><span class="fc">E</span>[(<span class="fv">y</span> − <span class="fv">ŷ</span>)²] = <span class="fo">Biais²</span> + <span class="fc">Variance</span> + <span class="fp">σ²</span></div>
+          <table class="ntable">
+            <tr><td class="sym">Biais²</td><td class="desc"><strong>Erreur systématique</strong> — modèle trop simple. Sous-apprentissage.</td></tr>
+            <tr><td class="sym">Variance</td><td class="desc"><strong>Sensibilité au bruit</strong> — réseau profond non régularisé. Sur-apprentissage.</td></tr>
+            <tr><td class="sym">σ²</td><td class="desc"><strong>Bruit irréductible</strong> — inhérent aux données.</td></tr>
+          </table>
+        </div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:12px;">
+        <div class="card go">
+          <div class="ct co">Symptômes</div>
+          <ul>
+            <li>Erreur train → 0 % mais erreur de test reste élevée</li>
+            <li>Grand écart entre courbe train et courbe validation</li>
+            <li>Le modèle est trop confiant sur des exemples ambigus</li>
+          </ul>
+        </div>
+        <div class="codebox">
+          <div class="code-header"><span class="code-lang">Python</span><span class="code-label">Diagnostic de surapprentissage</span></div>
+<pre><span class="kw">import</span> numpy <span class="kw">as</span> np
+
+epochs = np.arange(<span class="nb">1</span>, <span class="nb">51</span>)
+train_loss = <span class="nb">2.0</span> * np.exp(-<span class="nb">0.08</span> * epochs) + <span class="nb">0.05</span>
+val_loss   = <span class="nb">2.0</span> * np.exp(-<span class="nb">0.05</span> * epochs) + <span class="nb">0.3</span> \
+           + <span class="nb">0.008</span> * np.maximum(<span class="nb">0</span>, epochs - <span class="nb">20</span>)
+
+<span class="cm"># Détection du sur-apprentissage : gap train/val croissant</span>
+best_epoch = np.argmin(val_loss) + <span class="nb">1</span>
+<span class="fn">print</span>(<span class="st">f"Early stop à l'epoch {best_epoch}"</span>)
+<span class="fn">print</span>(<span class="st">f"Gap max : {(val_loss - train_loss).max():.3f}"</span>)</pre>
+        </div>
+        <div class="hl"><strong>But de la régularisation :</strong> réduire la <strong style="color:var(--cyan)">Variance</strong> sans augmenter le Biais.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     SLIDE 4 — DROPOUT PRINCIPE
+══════════════════════════════════════════ -->
+<div class="slide" id="s4">
+  <div class="shd"><span class="badge bv">Partie 2</span><span class="stitle">Dropout — Principe et intuition</span></div>
+  <div class="sbody">
+    <h2 class="sh"><span class="cv">Dropout</span> — Principe</h2>
+    <p class="ssub">Srivastava, Hinton, Krizhevsky, Sutskever &amp; Salakhutdinov — JMLR 2014</p>
+    <div class="two">
+      <div style="display:flex;flex-direction:column;gap:12px;">
+        <div class="card gv">
+          <div class="ct cv">Idée centrale</div>
+          <p>À chaque forward pass pendant l'entraînement, chaque neurone est <strong>désactivé aléatoirement</strong> avec une probabilité p. Le réseau ne peut plus s'appuyer sur un neurone particulier — il est forcé d'apprendre des <strong>représentations redondantes et robustes</strong>.</p>
+        </div>
+        <div class="card">
+          <div class="ct cv">Visualisation — réseau avec Dropout p=0.4</div>
+          <div class="ndg">
+            <div class="nlyr">
+              <div class="nnd on">x₁</div><div class="nnd on">x₂</div><div class="nnd on">x₃</div>
+              <div class="nlbl">Entrée</div>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:7px;align-items:center;">
+              <div class="nc"></div><div class="nc"></div><div class="nc dead"></div>
+            </div>
+            <div class="nlyr">
+              <div class="nnd on">h₁</div><div class="nnd on">h₂</div><div class="nnd off">✕</div><div class="nnd off">✕</div><div class="nnd on">h₅</div>
+              <div class="nlbl">Cachée<br/>(p=0.4)</div>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:7px;align-items:center;">
+              <div class="nc"></div><div class="nc dead"></div><div class="nc dead"></div><div class="nc"></div>
+            </div>
+            <div class="nlyr">
+              <div class="nnd on">ŷ₁</div><div class="nnd on">ŷ₂</div>
+              <div class="nlbl">Sortie</div>
+            </div>
+          </div>
+        </div>
+        <div class="hl v"><strong>Interprétation ensemble :</strong> avec n neurones, Dropout génère <strong>2ⁿ sous-réseaux différents</strong> partageant leurs poids — bagging implicite.</div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:12px;">
+        <div class="codebox">
+          <div class="code-header"><span class="code-lang">Python · NumPy</span><span class="code-label">Dropout from scratch</span></div>
+<pre><span class="kw">import</span> numpy <span class="kw">as</span> np
+
+<span class="kw">def</span> <span class="fn">dropout</span>(x, p=<span class="nb">0.5</span>, training=<span class="nb">True</span>):
+    <span class="kw">if not</span> training:
+        <span class="kw">return</span> x
+    mask = (np.random.rand(*x.shape) > p).astype(np.float32)
+    <span class="kw">return</span> x * mask / (<span class="nb">1</span> - p)  <span class="cm"># inverted dropout</span>
+
+x = np.array([<span class="nb">1.0</span>, <span class="nb">2.0</span>, <span class="nb">3.0</span>, <span class="nb">4.0</span>])
+<span class="fn">print</span>(<span class="fn">dropout</span>(x, p=<span class="nb">0.5</span>))
+<span class="cm"># Ex : [0. 4. 6. 0.]  — neurones nuls ou doublés</span></pre>
+        </div>
+        <div class="card">
+          <div class="ct co">Valeurs typiques de p</div>
+          <ul>
+            <li>Couches <strong>fully-connected</strong> : p = 0.4 à 0.5</li>
+            <li>Couches <strong>convolutives</strong> : p = 0.1 à 0.25</li>
+            <li>Couche d'<strong>entrée</strong> : p = 0.1 à 0.2</li>
+            <li>p &gt; 0.7 → <strong>sous-apprentissage</strong></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     SLIDE 5 — DROPOUT FORMULES
+══════════════════════════════════════════ -->
+<div class="slide" id="s5">
+  <div class="shd"><span class="badge bv">Partie 2</span><span class="stitle">Dropout — Formules mathématiques détaillées</span></div>
+  <div class="sbody">
+    <h2 class="sh"><span class="cv">Dropout</span> — Formules et notations</h2>
+    <p class="ssub">Comprendre chaque symbole pas à pas</p>
+    <div class="two">
+      <div style="display:flex;flex-direction:column;gap:12px;">
+        <div class="mbox">
+          <div class="mlabel">Espérance de la sortie (sans correction)</div>
+          <div class="formula"><span class="fc">E</span>[<span class="fv">ŷ</span>] = (1 − <span class="fp">p</span>) · <span class="fv">y</span></div>
+          <table class="ntable">
+            <tr><td class="sym">E[ŷ]</td><td class="desc"><strong>Espérance</strong> de la sortie masquée sur tous les tirages possibles de masques.</td></tr>
+            <tr><td class="sym">p</td><td class="desc"><strong>Taux de Dropout</strong> — probabilité de désactivation d'un neurone.</td></tr>
+            <tr><td class="sym">y</td><td class="desc"><strong>Activation originale</strong> sans masquage.</td></tr>
+            <tr><td class="sym">(1−p)</td><td class="desc"><strong>Fraction d'actifs</strong> — facteur de réduction en espérance.</td></tr>
+          </table>
+        </div>
+        <div class="mbox">
+          <div class="mlabel">Inverted Dropout — méthode standard PyTorch</div>
+          <div class="formula"><span class="fc">Entraînement</span> :
+  <span class="fv">ã</span>ᵢ = <span class="fo">mᵢ</span> · <span class="fv">aᵢ</span> / (1 − <span class="fp">p</span>)
+
+<span class="fc">Inférence</span> :
+  <span class="fv">â</span> = <span class="fv">a</span>  ← pas de modification</div>
+          <table class="ntable">
+            <tr><td class="sym">ãᵢ</td><td class="desc"><strong>Activation masquée et rescalée</strong> — résultat final du neurone i.</td></tr>
+            <tr><td class="sym">mᵢ</td><td class="desc"><strong>Masque binaire</strong> Bernoulli(1−p) — 1=actif, 0=désactivé.</td></tr>
+            <tr><td class="sym">÷(1−p)</td><td class="desc"><strong>Rescaling</strong> pour que E[ãᵢ] = aᵢ — train et test cohérents.</td></tr>
+          </table>
+        </div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:12px;">
+        <div class="mbox">
+          <div class="mlabel">MC-Dropout — T passes à l'inférence</div>
+          <div class="formula"><span class="fv">ŷ</span>_MC = <span class="fo">(1/T)</span> · <span class="fc">Σ</span>ₜ <span class="fv">f</span>(<span class="fv">x</span> ; <span class="fp">ω</span>ₜ)</div>
+          <table class="ntable">
+            <tr><td class="sym">T</td><td class="desc"><strong>Nombre de passes</strong> Monte-Carlo. T=50 suffit en pratique.</td></tr>
+            <tr><td class="sym">f(x;ωₜ)</td><td class="desc">Sortie avec le masque aléatoire ωₜ — chaque tirage = un sous-réseau.</td></tr>
+          </table>
+        </div>
+        <div class="codebox">
+          <div class="code-header"><span class="code-lang">Python · NumPy</span><span class="code-label">MC-Dropout from scratch</span></div>
+<pre><span class="kw">import</span> numpy <span class="kw">as</span> np
+
+<span class="kw">def</span> <span class="fn">mc_dropout</span>(model_fn, x, p=<span class="nb">0.5</span>, T=<span class="nb">50</span>):
+    <span class="cm"># T passes stochastiques → moyenne + incertitude</span>
+    preds = [<span class="fn">model_fn</span>(x * (np.random.rand(*x.shape) > p) / (<span class="nb">1</span>-p))
+             <span class="kw">for</span> _ <span class="kw">in</span> <span class="fn">range</span>(T)]
+    preds = np.<span class="fn">array</span>(preds)
+    <span class="kw">return</span> preds.<span class="fn">mean</span>(axis=<span class="nb">0</span>), preds.<span class="fn">var</span>(axis=<span class="nb">0</span>)
+
+<span class="cm"># mean → prédiction finale  |  var → incertitude épistémique</span></pre>
+        </div>
+        <div class="card gv">
+          <div class="ct cv">Avantages &amp; Limites</div>
+          <ul>
+            <li>Force des <strong>représentations redondantes</strong> et robustes</li>
+            <li>Augmente le temps d'entraînement (×2–3×)</li>
+            <li><strong>Désactiver en inférence</strong> (<code style="font-family:var(--ff-m)">model.eval()</code>)</li>
+            <li>Interaction complexe avec BatchNorm — placer Dropout <em>après</em> BN</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     SLIDE 6 — BATCH NORM INTRO
+══════════════════════════════════════════ -->
+<div class="slide" id="s6">
+  <div class="shd"><span class="badge bg">Partie 3</span><span class="stitle">Batch Normalization — Motivation</span></div>
+  <div class="sbody">
+    <h2 class="sh">Batch <span class="cg">Normalization</span></h2>
+    <p class="ssub">Ioffe &amp; Szegedy, ICML 2015 — Une révolution dans l'entraînement des réseaux profonds</p>
+    <div class="two">
+      <div style="display:flex;flex-direction:column;gap:12px;">
+        <div class="card gg">
+          <div class="ct cg">Le problème : Internal Covariate Shift</div>
+          <p>Lors de l'entraînement, la mise à jour des poids d'une couche L modifie la <strong>distribution des activations</strong> vue par la couche L+1. Cette couche doit s'adapter en permanence à une cible mouvante — ralentit l'entraînement et exige de petits taux d'apprentissage.</p>
+        </div>
+        <div class="card">
+          <div class="ct cg">Pipeline BatchNorm dans un bloc</div>
+          <div class="steps" style="margin-top:6px;">
+            <div class="step"><div class="snum c">1</div><div class="stxt"><strong>Couche Linéaire / Conv</strong> : z = Wx + b</div></div>
+            <div class="step"><div class="snum g">2</div><div class="stxt"><strong>BatchNorm</strong> : normalise z → x̂ (μ=0, σ²=1)</div></div>
+            <div class="step"><div class="snum g">3</div><div class="stxt"><strong>Scale &amp; Shift</strong> : y = γ · x̂ + β (appris)</div></div>
+            <div class="step"><div class="snum v">4</div><div class="stxt"><strong>Activation</strong> : ReLU(y)</div></div>
+          </div>
+        </div>
+        <div class="hl g"><strong>Bénéfices :</strong> taux d'apprentissage ×10 à ×100 plus grands · convergence 2–14× plus rapide · légère régularisation par le bruit du batch.</div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:12px;">
+        <div class="codebox">
+          <div class="code-header"><span class="code-lang">Python · NumPy</span><span class="code-label">BatchNorm forward from scratch</span></div>
+<pre><span class="kw">import</span> numpy <span class="kw">as</span> np
+
+<span class="kw">def</span> <span class="fn">batchnorm</span>(x, gamma, beta, eps=<span class="nb">1e-5</span>):
+    mu  = x.<span class="fn">mean</span>(axis=<span class="nb">0</span>)          <span class="cm"># moyenne sur le batch</span>
+    var = x.<span class="fn">var</span>(axis=<span class="nb">0</span>)           <span class="cm"># variance sur le batch</span>
+    x_hat = (x - mu) / np.<span class="fn">sqrt</span>(var + eps)
+    <span class="kw">return</span> gamma * x_hat + beta    <span class="cm"># scale & shift appris</span>
+
+x     = np.random.<span class="fn">randn</span>(<span class="nb">4</span>, <span class="nb">3</span>)   <span class="cm"># batch=4, features=3</span>
+gamma = np.<span class="fn">ones</span>(<span class="nb">3</span>); beta = np.<span class="fn">zeros</span>(<span class="nb">3</span>)
+y = <span class="fn">batchnorm</span>(x, gamma, beta)
+<span class="fn">print</span>(<span class="st">"μ ≈ 0 :"</span>, y.<span class="fn">mean</span>(axis=<span class="nb">0</span>).round(<span class="nb">4</span>))  <span class="cm"># [0. 0. 0.]</span>
+<span class="fn">print</span>(<span class="st">"σ²≈ 1 :"</span>, y.<span class="fn">var</span>(axis=<span class="nb">0</span>).round(<span class="nb">4</span>))   <span class="cm"># [1. 1. 1.]</span></pre>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     SLIDE 7 — BATCH NORM FORMULES
+══════════════════════════════════════════ -->
+<div class="slide" id="s7">
+  <div class="shd"><span class="badge bg">Partie 3</span><span class="stitle">Batch Normalization — Formules complètes</span></div>
+  <div class="sbody">
+    <h2 class="sh">BatchNorm — <span class="cg">formules</span> et notations</h2>
+    <p class="ssub">Mini-batch B = {x₁, x₂, …, xₘ} — calcul séparé par feature</p>
+    <div class="grid g2">
+      <div class="mbox">
+        <div class="mlabel">Étape 1 — Moyenne du mini-batch</div>
+        <div class="formula"><span class="fv">μ_B</span> = <span class="fo">(1/m)</span> · <span class="fc">Σᵢ</span> <span class="fv">xᵢ</span></div>
+        <table class="ntable">
+          <tr><td class="sym">μ_B</td><td class="desc"><strong>Moyenne empirique</strong> sur les m exemples du batch, par feature.</td></tr>
+          <tr><td class="sym">m</td><td class="desc"><strong>Taille du batch</strong> — 32, 64 ou 128 typiquement.</td></tr>
+          <tr><td class="sym">xᵢ</td><td class="desc"><strong>Activation du i-ème exemple</strong> pour la feature courante.</td></tr>
+        </table>
+      </div>
+      <div class="mbox">
+        <div class="mlabel">Étape 2 — Variance du mini-batch</div>
+        <div class="formula"><span class="fv">σ²_B</span> = <span class="fo">(1/m)</span> · <span class="fc">Σᵢ</span> (<span class="fv">xᵢ</span> − <span class="fv">μ_B</span>)²</div>
+        <table class="ntable">
+          <tr><td class="sym">σ²_B</td><td class="desc"><strong>Variance empirique</strong> — dispersion des activations autour de leur moyenne.</td></tr>
+          <tr><td class="sym">(xᵢ−μ_B)²</td><td class="desc">Carré de l'écart — toujours positif.</td></tr>
+        </table>
+      </div>
+      <div class="mbox">
+        <div class="mlabel">Étape 3 — Normalisation (centrer–réduire)</div>
+        <div class="formula"><span class="fv">x̂ᵢ</span> = (<span class="fv">xᵢ</span> − <span class="fv">μ_B</span>) / √(<span class="fv">σ²_B</span> + <span class="fc">ε</span>)</div>
+        <table class="ntable">
+          <tr><td class="sym">x̂ᵢ</td><td class="desc"><strong>Activation normalisée</strong> — distribution N(0,1) en espérance.</td></tr>
+          <tr><td class="sym">ε</td><td class="desc"><strong>Constante numérique</strong> ≈ 1e-5 — évite la division par zéro.</td></tr>
+        </table>
+      </div>
+      <div class="mbox">
+        <div class="mlabel">Étape 4 — Scale &amp; Shift (paramètres appris)</div>
+        <div class="formula"><span class="fv">yᵢ</span> = <span class="fc">γ</span> · <span class="fv">x̂ᵢ</span> + <span class="fo">β</span></div>
+        <table class="ntable">
+          <tr><td class="sym">γ</td><td class="desc"><strong>Scale appris</strong> — initialisé à 1. Module l'amplitude.</td></tr>
+          <tr><td class="sym">β</td><td class="desc"><strong>Shift appris</strong> — initialisé à 0. Décale la moyenne. Remplace le biais de la couche.</td></tr>
+          <tr><td class="sym">yᵢ</td><td class="desc"><strong>Sortie finale</strong> — distribution apprennable, pas forcément N(0,1).</td></tr>
+        </table>
+      </div>
+    </div>
+    <div class="card gg">
+      <div class="ct cg">À l'inférence : statistiques globales par EMA</div>
+      <p>Pendant l'entraînement on maintient : <strong>μ_global ← α·μ_global + (1−α)·μ_B</strong>. À l'inférence, ces valeurs fixes remplacent les stats du batch — sinon un batch de taille 1 serait normalisé à 0 et perdrait toute information.</p>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     SLIDE 8 — LAYER NORM
+══════════════════════════════════════════ -->
+<div class="slide" id="s8">
+  <div class="shd"><span class="badge bo">Partie 4</span><span class="stitle">Layer Normalization — Formule et comparaison</span></div>
+  <div class="sbody">
+    <h2 class="sh">Layer <span class="co">Normalization</span></h2>
+    <p class="ssub">Ba, Kiros &amp; Hinton, 2016 — Conçu pour les RNN et Transformers</p>
+    <div class="two">
+      <div style="display:flex;flex-direction:column;gap:12px;">
+        <div class="card go">
+          <div class="ct co">Motivation</div>
+          <p>BatchNorm dépend de la taille du batch. Pour les <strong>Transformers, RNN, séquences variables</strong>, il fallait une normalisation indépendante du batch. LayerNorm normalise sur les features de <em>chaque exemple</em> séparément.</p>
+        </div>
+        <div class="mbox">
+          <div class="mlabel">Formule LayerNorm — pour l'exemple i</div>
+          <div class="formula"><span class="fv">μ_l</span> = <span class="fo">(1/H)</span> · <span class="fc">Σₕ</span> <span class="fv">aₕ</span>
+
+<span class="fv">σ²_l</span> = <span class="fo">(1/H)</span> · <span class="fc">Σₕ</span> (<span class="fv">aₕ</span> − <span class="fv">μ_l</span>)²
+
+<span class="fv">x̂ₕ</span> = (<span class="fv">aₕ</span> − <span class="fv">μ_l</span>) / √(<span class="fv">σ²_l</span> + ε)
+
+<span class="fv">yₕ</span> = <span class="fc">γ</span> · <span class="fv">x̂ₕ</span> + <span class="fo">β</span></div>
+          <table class="ntable">
+            <tr><td class="sym">H</td><td class="desc"><strong>Nombre de features</strong> — LayerNorm moyenne sur les H features d'UN exemple.</td></tr>
+            <tr><td class="sym">aₕ</td><td class="desc"><strong>Activation de la h-ème feature</strong> pour l'exemple courant.</td></tr>
+            <tr><td class="sym">μ_l, σ²_l</td><td class="desc"><strong>Moyenne et variance par exemple</strong> — différent de BatchNorm qui utilise le batch.</td></tr>
+          </table>
+        </div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:12px;">
+        <div class="codebox">
+          <div class="code-header"><span class="code-lang">Python · NumPy</span><span class="code-label">LayerNorm from scratch</span></div>
+<pre><span class="kw">import</span> numpy <span class="kw">as</span> np
+
+<span class="kw">def</span> <span class="fn">layernorm</span>(x, gamma, beta, eps=<span class="nb">1e-5</span>):
+    <span class="cm"># axis=1 : moyenne/var sur les features de CHAQUE exemple</span>
+    mu  = x.<span class="fn">mean</span>(axis=<span class="nb">1</span>, keepdims=<span class="nb">True</span>)
+    var = x.<span class="fn">var</span>(axis=<span class="nb">1</span>, keepdims=<span class="nb">True</span>)
+    <span class="kw">return</span> gamma * (x - mu) / np.<span class="fn">sqrt</span>(var + eps) + beta
+
+x     = np.random.<span class="fn">randn</span>(<span class="nb">4</span>, <span class="nb">3</span>)   <span class="cm"># batch=4, H=3</span>
+gamma = np.<span class="fn">ones</span>(<span class="nb">3</span>); beta = np.<span class="fn">zeros</span>(<span class="nb">3</span>)
+y = <span class="fn">layernorm</span>(x, gamma, beta)
+<span class="fn">print</span>(<span class="st">"μ par exemple :"</span>, y.<span class="fn">mean</span>(axis=<span class="nb">1</span>).round(<span class="nb">4</span>))  <span class="cm"># ≈ 0</span></pre>
+        </div>
+        <div class="hl o"><strong>Règle pratique :</strong> CNN/vision (grand batch) → <strong>BatchNorm</strong> · Transformer/NLP/batch variable → <strong>LayerNorm</strong> · LLM modernes (LLaMA, Mistral) → <strong>RMSNorm</strong>.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     SLIDE 9 — BATCHNORM vs LAYERNORM
+══════════════════════════════════════════ -->
+<div class="slide" id="s9">
+  <div class="shd"><span class="badge bg">Partie 3–4</span><span class="stitle">BatchNorm vs LayerNorm — Comparaison systématique</span></div>
+  <div class="sbody">
+    <h2 class="sh">BatchNorm <span class="cg">vs</span> LayerNorm</h2>
+    <p class="ssub">Quand utiliser l'un plutôt que l'autre ?</p>
+    <table class="stbl">
+      <thead>
+        <tr><th>Critère</th><th>Batch Normalization</th><th>Layer Normalization</th><th>Group Norm</th></tr>
+      </thead>
+      <tbody>
+        <tr><td><strong>Axe de normalisation</strong></td><td>Sur le batch (par feature)</td><td>Sur les features (par exemple)</td><td>Sur des groupes de features</td></tr>
+        <tr><td><strong>Dépendance au batch</strong></td><td><span class="tg o">Oui</span> — stats du batch</td><td><span class="tg g">Non</span> — indépendant</td><td><span class="tg g">Non</span></td></tr>
+        <tr><td><strong>Petit batch (m&lt;8)</strong></td><td><span class="tg o">Instable</span></td><td><span class="tg g">Stable</span></td><td><span class="tg g">Stable</span></td></tr>
+        <tr><td><strong>Architecture optimale</strong></td><td>CNN — ResNet, EfficientNet</td><td>Transformer — GPT, BERT, ViT</td><td>Détection d'objets</td></tr>
+        <tr><td><strong>Train vs Eval</strong></td><td>Comportement différent (EMA)</td><td>Identique</td><td>Identique</td></tr>
+        <tr><td><strong>Séquences variables</strong></td><td><span class="tg o">Difficile</span></td><td><span class="tg g">Naturel</span></td><td><span class="tg g">OK</span></td></tr>
+      </tbody>
+    </table>
+    <div class="grid g2" style="margin-top:4px;">
+      <div class="hl g"><strong>Quand utiliser BatchNorm :</strong> CNN sur images · batch ≥ 8 · ResNet, EfficientNet · toujours placer <em>avant</em> l'activation non-linéaire.</div>
+      <div class="hl o"><strong>Quand utiliser LayerNorm :</strong> Transformers (BERT, GPT, LLaMA) · RNN/LSTM · NLP · batch variable ou petit · architectures auto-régressives.</div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     SLIDE 10 — LABEL SMOOTHING
+══════════════════════════════════════════ -->
+<div class="slide" id="s10">
+  <div class="shd"><span class="badge bp">Partie 5</span><span class="stitle">Label Smoothing — Régularisation des cibles</span></div>
+  <div class="sbody">
+    <h2 class="sh">Label <span class="cp">Smoothing</span></h2>
+    <p class="ssub">Szegedy et al., CVPR 2016 · Müller, Kornblith &amp; Hinton, NeurIPS 2019</p>
+    <div class="two">
+      <div style="display:flex;flex-direction:column;gap:12px;">
+        <div class="card gp">
+          <div class="ct cp">Problème : surconfiance avec les cibles one-hot</div>
+          <p>Avec des cibles one-hot dures (0 ou 1), le réseau cherche à saturer le softmax — logits → ±∞. Il devient <strong>surconfiant</strong> : 100% pour la bonne classe, 0% pour les autres. Nuit à la calibration et à la généralisation.</p>
+        </div>
+        <div class="mbox">
+          <div class="mlabel">Formule de la cible lissée</div>
+          <div class="formula"><span class="fv">ỹ</span>_k = (1 − <span class="fp">α</span>) · <span class="fv">y</span>_k + <span class="fp">α</span>/<span class="fc">K</span></div>
+          <table class="ntable">
+            <tr><td class="sym">ỹ_k</td><td class="desc"><strong>Cible lissée</strong> pour la classe k — remplace la cible one-hot dans la perte.</td></tr>
+            <tr><td class="sym">α</td><td class="desc"><strong>Taux de lissage</strong> — fraction redistribuée uniformément. Standard : <strong>α = 0.1</strong>.</td></tr>
+            <tr><td class="sym">y_k</td><td class="desc"><strong>Cible one-hot</strong> — 1 pour la bonne classe, 0 pour les autres.</td></tr>
+            <tr><td class="sym">K</td><td class="desc"><strong>Nombre de classes</strong> — α/K = probabilité minimale garantie pour chaque classe.</td></tr>
+          </table>
+        </div>
+        <div style="background:var(--surf2);border-radius:9px;padding:12px;font-size:12.5px;color:var(--muted);">
+          <strong style="color:var(--text)">Exemple numérique</strong> (α=0.1, K=10) :<br/>
+          Bonne classe → (1−0.1)·1 + 0.1/10 = <strong style="color:var(--green)">0.91</strong><br/>
+          Mauvaises classes → (1−0.1)·0 + 0.1/10 = <strong style="color:var(--orange)">0.01</strong> chacune
+        </div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:12px;">
+        <div class="codebox">
+          <div class="code-header"><span class="code-lang">Python · NumPy</span><span class="code-label">Label Smoothing from scratch</span></div>
+<pre><span class="kw">import</span> numpy <span class="kw">as</span> np
+
+<span class="kw">def</span> <span class="fn">label_smooth</span>(y_onehot, alpha=<span class="nb">0.1</span>):
+    K = y_onehot.shape[<span class="nb">1</span>]
+    <span class="kw">return</span> (<span class="nb">1</span> - alpha) * y_onehot + alpha / K
+
+<span class="cm"># Exemple : 4 classes, alpha=0.1</span>
+y   = np.<span class="fn">eye</span>(<span class="nb">4</span>)[[<span class="nb">0</span>]]           <span class="cm"># one-hot [1, 0, 0, 0]</span>
+y_s = <span class="fn">label_smooth</span>(y)
+<span class="fn">print</span>(<span class="st">"one-hot :"</span>, y[<span class="nb">0</span>])        <span class="cm"># [1.  0.  0.  0. ]</span>
+<span class="fn">print</span>(<span class="st">"lissé   :"</span>, y_s[<span class="nb">0</span>])     <span class="cm"># [0.925 0.025 0.025 0.025]</span></pre>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     SLIDE 11 — DATA AUGMENTATION
+══════════════════════════════════════════ -->
+<div class="slide" id="s11">
+  <div class="shd"><span class="badge bo">Partie 6</span><span class="stitle">Data Augmentation comme régularisation implicite</span></div>
+  <div class="sbody">
+    <h2 class="sh">Data <span class="co">Augmentation</span></h2>
+    <p class="ssub">Régularisation implicite par diversification artificielle des données</p>
+    <div class="two">
+      <div style="display:flex;flex-direction:column;gap:12px;">
+        <div class="card go">
+          <div class="ct co">Principe</div>
+          <p>En appliquant des <strong>transformations préservant la sémantique</strong>, on augmente la diversité effective du dataset et on force le modèle à être <strong>invariant</strong> à ces transformations — sans collecter de nouvelles données.</p>
+        </div>
+        <div class="mbox">
+          <div class="mlabel">Mixup — Zhang et al., ICLR 2018</div>
+          <div class="formula"><span class="fv">x̃</span> = <span class="fc">λ</span>·<span class="fv">xᵢ</span> + (1−<span class="fc">λ</span>)·<span class="fv">xⱼ</span>
+<span class="fv">ỹ</span> = <span class="fc">λ</span>·<span class="fv">yᵢ</span> + (1−<span class="fc">λ</span>)·<span class="fv">yⱼ</span>
+<span class="fc">λ</span> ~ <span class="fo">Beta</span>(α, α)</div>
+          <table class="ntable">
+            <tr><td class="sym">x̃, ỹ</td><td class="desc"><strong>Exemple synthétique</strong> — interpolation linéaire de deux exemples réels.</td></tr>
+            <tr><td class="sym">λ</td><td class="desc"><strong>Poids</strong> tiré de Beta(α,α). Les images ET les étiquettes sont interpolées.</td></tr>
+          </table>
+        </div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:12px;">
+        <div class="codebox">
+          <div class="code-header"><span class="code-lang">Python · NumPy</span><span class="code-label">Mixup from scratch</span></div>
+<pre><span class="kw">import</span> numpy <span class="kw">as</span> np
+
+<span class="kw">def</span> <span class="fn">mixup</span>(x, y, alpha=<span class="nb">0.4</span>):
+    lam = np.random.<span class="fn">beta</span>(alpha, alpha)
+    idx = np.random.<span class="fn">permutation</span>(len(x))
+    <span class="kw">return</span> lam*x + (<span class="nb">1</span>-lam)*x[idx], lam*y + (<span class="nb">1</span>-lam)*y[idx]
+
+<span class="cm"># batch de 8 images 32×32 RGB, 10 classes</span>
+x = np.random.<span class="fn">randn</span>(<span class="nb">8</span>, <span class="nb">32</span>, <span class="nb">32</span>, <span class="nb">3</span>)
+y = np.<span class="fn">eye</span>(<span class="nb">10</span>)[np.random.<span class="fn">randint</span>(<span class="nb">0</span>, <span class="nb">10</span>, <span class="nb">8</span>)]
+x_mix, y_mix = <span class="fn">mixup</span>(x, y)
+<span class="fn">print</span>(<span class="st">"label mixé :"</span>, y_mix[<span class="nb">0</span>].round(<span class="nb">2</span>))</pre>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     SLIDE 12 — WEIGHT DECAY
+══════════════════════════════════════════ -->
+<div class="slide" id="s12">
+  <div class="shd"><span class="badge bc">Partie 7</span><span class="stitle">Weight Decay — Régularisation L1 / L2</span></div>
+  <div class="sbody">
+    <h2 class="sh">Weight <span class="cc">Decay</span></h2>
+    <p class="ssub">Principe de parcimonie — préférer les modèles avec des poids petits</p>
+    <div class="two">
+      <div style="display:flex;flex-direction:column;gap:12px;">
+        <div class="card gc">
+          <div class="ct cc">Principe</div>
+          <p>On ajoute à la fonction de perte un terme de <strong>pénalité sur les poids</strong>. Cela incite le modèle à utiliser des poids faibles — il ne peut pas s'appuyer sur des features très spécifiques aux données d'entraînement.</p>
+        </div>
+        <div class="mbox">
+          <div class="mlabel">Régularisation L2 (Ridge / Weight Decay)</div>
+          <div class="formula"><span class="fv">L</span>_reg = <span class="fv">L</span> + <span class="fc">λ</span> · <span class="fc">Σ</span> <span class="fv">wᵢ</span>²</div>
+          <table class="ntable">
+            <tr><td class="sym">L</td><td class="desc"><strong>Perte originale</strong> (cross-entropie, MSE…).</td></tr>
+            <tr><td class="sym">λ</td><td class="desc"><strong>Coefficient</strong> — typiquement 1e-4 à 1e-2. λ=0 : pas de régularisation.</td></tr>
+            <tr><td class="sym">Σwᵢ²</td><td class="desc"><strong>Norme L2 des poids</strong> — pénalise les grands poids.</td></tr>
+          </table>
+        </div>
+        <div class="mbox">
+          <div class="mlabel">Régularisation L1 (Lasso)</div>
+          <div class="formula"><span class="fv">L</span>_reg = <span class="fv">L</span> + <span class="fc">λ</span> · <span class="fc">Σ</span> |<span class="fv">wᵢ</span>|</div>
+          <table class="ntable">
+            <tr><td class="sym">|wᵢ|</td><td class="desc"><strong>Norme L1</strong> — encourage la <strong>parcimonie</strong> : nombreux poids exactement nuls.</td></tr>
+          </table>
+        </div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:12px;">
+        <div class="codebox">
+          <div class="code-header"><span class="code-lang">Python · NumPy</span><span class="code-label">Weight Decay (L2) from scratch</span></div>
+<pre><span class="kw">import</span> numpy <span class="kw">as</span> np
+
+<span class="kw">def</span> <span class="fn">loss_l2</span>(base_loss, weights, lam=<span class="nb">1e-4</span>):
+    <span class="cm"># Pénalise les grands poids → régularisation L2</span>
+    l2 = <span class="fn">sum</span>(np.<span class="fn">sum</span>(W**<span class="nb">2</span>) <span class="kw">for</span> W <span class="kw">in</span> weights)
+    <span class="kw">return</span> base_loss + lam * l2
+
+<span class="cm"># Exemple</span>
+W1 = np.random.<span class="fn">randn</span>(<span class="nb">4</span>, <span class="nb">4</span>)
+W2 = np.random.<span class="fn">randn</span>(<span class="nb">4</span>, <span class="nb">2</span>)
+loss = <span class="fn">loss_l2</span>(<span class="nb">0.8</span>, [W1, W2])
+<span class="fn">print</span>(<span class="st">f"Loss régularisée : {loss:.4f}"</span>)
+<span class="cm"># PyTorch : Adam(params, weight_decay=1e-4)</span></pre>
+        </div>
+        <div class="card gc">
+          <div class="ct cc">L1 vs L2</div>
+          <ul>
+            <li><strong>L2</strong> : standard DL · Adam weight_decay=1e-4 · différentiable partout</li>
+            <li><strong>L1</strong> : parcimonie (feature selection) · non différentiable en 0</li>
+            <li><strong>Elastic Net</strong> : combinaison L1+L2 — compromis</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     SLIDE 13 — ABLATION
+══════════════════════════════════════════ -->
+<div class="slide" id="s13">
+  <div class="shd"><span class="badge bc">Partie 8</span><span class="stitle">Ablation — Comparaison des méthodes</span></div>
+  <div class="sbody">
+    <h2 class="sh">Comparaison des méthodes de <span class="cc">régularisation</span></h2>
+    <p class="ssub">Analyse qualitative — effets, cas d'usage, interactions</p>
+    <table class="stbl">
+      <thead>
+        <tr><th>Méthode</th><th>Cible</th><th>Avantage principal</th><th>Limite</th><th>Cas d'usage</th></tr>
+      </thead>
+      <tbody>
+        <tr><td><strong>Dropout</strong></td><td>Neurones</td><td>Représentations redondantes, ensemble implicite</td><td>Entraînement plus long (×2–3)</td><td>Couches FC denses</td></tr>
+        <tr><td><strong>BatchNorm</strong></td><td>Activations</td><td>Convergence ×2–14 plus rapide, permet grand lr</td><td>Dépend du batch (m≥8)</td><td>CNN sur images</td></tr>
+        <tr><td><strong>LayerNorm</strong></td><td>Activations</td><td>Indépendant du batch, séquences variables</td><td>Plus lent que BatchNorm sur CNN</td><td>Transformers, RNN</td></tr>
+        <tr><td><strong>Label Smoothing</strong></td><td>Cibles</td><td>Évite surconfiance, meilleure calibration</td><td>Nuit à la distillation</td><td>Classification K classes</td></tr>
+        <tr><td><strong>Mixup / CutMix</strong></td><td>Données</td><td>Frontières douces, robustesse</td><td>Étiquettes continues complexes</td><td>Vision (images)</td></tr>
+        <tr><td><strong>Weight Decay</strong></td><td>Poids</td><td>Pénalise la complexité, parcimonie</td><td>Hyperparamètre λ sensible</td><td>Universel</td></tr>
+      </tbody>
+    </table>
+    <div class="grid g2" style="margin-top:4px;">
+      <div class="hl"><strong>Combinaison recommandée :</strong> BatchNorm + Dropout (Dropout <em>après</em> BN) + Weight Decay + Label Smoothing = combinaison standard des architectures modernes (ResNet, ViT).</div>
+      <div class="hl v"><strong>MC-Dropout (Gal &amp; Ghahramani) :</strong> garder Dropout actif à l'inférence et effectuer T passes → estimation d'<strong>incertitude épistémique</strong> — utile pour la détection d'anomalies et les systèmes critiques.</div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     SLIDE 14 — RÉCAP FORMULES
+══════════════════════════════════════════ -->
+<div class="slide" id="s14">
+  <div class="shd"><span class="badge bv">Récap</span><span class="stitle">Toutes les formules — mémo visuel complet</span></div>
+  <div class="sbody">
+    <h2 class="sh">Récapitulatif des <span class="cv">formules</span></h2>
+    <p class="ssub">Toutes les formules clés en un coup d'œil</p>
+    <div class="grid g2">
+      <div class="mbox">
+        <div class="mlabel">Dropout — inverted (entraînement)</div>
+        <div class="formula"><span class="fv">ãᵢ</span> = <span class="fo">mᵢ</span> · <span class="fv">aᵢ</span> / (1 − <span class="fp">p</span>)</div>
+        <div style="font-size:12px;color:var(--muted);margin-top:8px;line-height:1.6;"><strong style="color:#E0E8FF">mᵢ</strong> : masque Bernoulli(1−p) · <strong style="color:#E0E8FF">aᵢ</strong> : activation · <strong style="color:#E0E8FF">p</strong> : taux drop · <strong style="color:#E0E8FF">÷(1−p)</strong> : rescaling</div>
+      </div>
+      <div class="mbox">
+        <div class="mlabel">BatchNorm — normalisation + affine</div>
+        <div class="formula"><span class="fv">x̂ᵢ</span> = (<span class="fv">xᵢ</span>−<span class="fv">μ_B</span>)/√(<span class="fv">σ²_B</span>+<span class="fc">ε</span>)
+<span class="fv">yᵢ</span> = <span class="fc">γ</span>·<span class="fv">x̂ᵢ</span> + <span class="fo">β</span></div>
+        <div style="font-size:12px;color:var(--muted);margin-top:8px;line-height:1.6;"><strong style="color:#E0E8FF">μ_B, σ²_B</strong> : stats du batch · <strong style="color:#E0E8FF">ε</strong> : stabilité · <strong style="color:#E0E8FF">γ,β</strong> : scale/shift appris</div>
+      </div>
+      <div class="mbox">
+        <div class="mlabel">LayerNorm — par exemple</div>
+        <div class="formula"><span class="fv">x̂ₕ</span> = (<span class="fv">aₕ</span>−<span class="fv">μ_l</span>)/√(<span class="fv">σ²_l</span>+ε) ; <span class="fv">yₕ</span>=<span class="fc">γ</span>·<span class="fv">x̂ₕ</span>+<span class="fo">β</span></div>
+        <div style="font-size:12px;color:var(--muted);margin-top:8px;line-height:1.6;"><strong style="color:#E0E8FF">μ_l, σ²_l</strong> : calculés sur les H features d'UN seul exemple (pas sur le batch)</div>
+      </div>
+      <div class="mbox">
+        <div class="mlabel">Label Smoothing</div>
+        <div class="formula"><span class="fv">ỹ</span>_k = (1−<span class="fp">α</span>)·<span class="fv">y</span>_k + <span class="fp">α</span>/<span class="fc">K</span></div>
+        <div style="font-size:12px;color:var(--muted);margin-top:8px;line-height:1.6;"><strong style="color:#E0E8FF">α</strong> : taux lissage (0.1) · <strong style="color:#E0E8FF">y_k</strong> : one-hot · <strong style="color:#E0E8FF">K</strong> : nb classes</div>
+      </div>
+      <div class="mbox">
+        <div class="mlabel">Mixup — interpolation</div>
+        <div class="formula"><span class="fv">x̃</span>=<span class="fc">λ</span>·<span class="fv">xᵢ</span>+(1−<span class="fc">λ</span>)·<span class="fv">xⱼ</span> ; <span class="fv">ỹ</span>=<span class="fc">λ</span>·<span class="fv">yᵢ</span>+(1−<span class="fc">λ</span>)·<span class="fv">yⱼ</span></div>
+        <div style="font-size:12px;color:var(--muted);margin-top:8px;line-height:1.6;"><strong style="color:#E0E8FF">λ</strong> ~ Beta(α,α) · interpolation images ET étiquettes simultanément</div>
+      </div>
+      <div class="mbox">
+        <div class="mlabel">Weight Decay (L2)</div>
+        <div class="formula"><span class="fv">L</span>_reg = <span class="fv">L</span> + <span class="fc">λ</span>·<span class="fc">Σ</span> <span class="fv">wᵢ</span>²</div>
+        <div style="font-size:12px;color:var(--muted);margin-top:8px;line-height:1.6;"><strong style="color:#E0E8FF">λ</strong> : coefficient · <strong style="color:#E0E8FF">Σwᵢ²</strong> : norme L2 — pénalise les grands poids</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     SLIDE 15 — RÉFÉRENCES
+══════════════════════════════════════════ -->
+<div class="slide" id="s15">
+  <div class="shd"><span class="badge bc">Références</span><span class="stitle">Bibliographie primaire vérifiée</span></div>
+  <div class="sbody">
+    <h2 class="sh">Références <span class="cc">fondatrices</span></h2>
+    <p class="ssub">Articles primaires publiés et vérifiés — normes IEEE/APA</p>
+    <div class="rlist">
+      <div class="ritem">
+        <strong>Srivastava, N., Hinton, G., Krizhevsky, A., Sutskever, I. &amp; Salakhutdinov, R.</strong><span class="ryear">2014</span><br/>
+        Dropout: A Simple Way to Prevent Neural Networks from Overfitting. <em>Journal of Machine Learning Research</em>, 15(56), 1929–1958.
+        <div style="margin-top:5px;font-family:var(--ff-m);font-size:11px;color:#A890FF">— Article fondateur : algorithme, inverted dropout, interprétation ensemble, résultats MNIST/CIFAR</div>
+      </div>
+      <div class="ritem">
+        <strong>Ioffe, S. &amp; Szegedy, C.</strong><span class="ryear">2015</span><br/>
+        Batch Normalization: Accelerating Deep Network Training by Reducing Internal Covariate Shift. <em>Proceedings of ICML 2015</em>, PMLR 37, 448–456.
+        <div style="margin-top:5px;font-family:var(--ff-m);font-size:11px;color:var(--green)">— Article fondateur BN : formules étapes 1–4, effet sur la vitesse d'entraînement et la régularisation</div>
+      </div>
+      <div class="ritem">
+        <strong>Gal, Y. &amp; Ghahramani, Z.</strong><span class="ryear">2016</span><br/>
+        Dropout as a Bayesian Approximation: Representing Model Uncertainty in Deep Learning. <em>Proceedings of ICML 2016</em>, PMLR 48, 1050–1059.
+        <div style="margin-top:5px;font-family:var(--ff-m);font-size:11px;color:#A890FF">— Interprétation bayésienne du Dropout · MC-Dropout pour l'estimation d'incertitude</div>
+      </div>
+      <div class="ritem">
+        <strong>Ba, J., Kiros, J. R. &amp; Hinton, G.</strong><span class="ryear">2016</span><br/>
+        Layer Normalization. <em>arXiv preprint arXiv:1607.06450</em>.
+        <div style="margin-top:5px;font-family:var(--ff-m);font-size:11px;color:var(--orange)">— Article fondateur LayerNorm : motivations RNN, formulation, comparaison à BatchNorm</div>
+      </div>
+      <div class="ritem">
+        <strong>Müller, R., Kornblith, S. &amp; Hinton, G.</strong><span class="ryear">2019</span><br/>
+        When Does Label Smoothing Help? <em>Advances in Neural Information Processing Systems (NeurIPS 2019)</em>, 32, 4694–4703.
+        <div style="margin-top:5px;font-family:var(--ff-m);font-size:11px;color:var(--pink)">— Analyse théorique et empirique du label smoothing · effet sur la distillation · calibration</div>
+      </div>
+      <div class="ritem">
+        <strong>Zhang, H., Cisse, M., Dauphin, Y. N. &amp; Lopez-Paz, D.</strong><span class="ryear">2018</span><br/>
+        Mixup: Beyond Empirical Risk Minimization. <em>International Conference on Learning Representations (ICLR 2018)</em>.
+        <div style="margin-top:5px;font-family:var(--ff-m);font-size:11px;color:var(--orange)">— Article fondateur Mixup : interpolation linéaire des données et étiquettes, résultats CIFAR/ImageNet</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     SLIDE 16 — CONCLUSION
+══════════════════════════════════════════ -->
+<div class="slide" id="s16">
+  <div class="shd"><span class="badge bc">Conclusion</span><span class="stitle">Synthèse et ouverture</span></div>
+  <div class="sbody">
+    <h2 class="sh">Conclusion &amp; <span class="cc">Synthèse</span></h2>
+    <p class="ssub">Ce qu'il faut retenir — et vers quoi ce domaine évolue</p>
+    <div class="two">
+      <div style="display:flex;flex-direction:column;gap:12px;">
+        <div class="card gc">
+          <div class="ct cc">Points clés à retenir</div>
+          <ul>
+            <li><strong>Dropout</strong> : désactiver aléatoirement = ensemble bayésien implicite de 2ⁿ sous-réseaux. Réduit la variance.</li>
+            <li><strong>BatchNorm</strong> : normaliser par mini-batch stabilise les distributions → convergence 2–14× plus rapide. Indispensable pour les CNN.</li>
+            <li><strong>LayerNorm</strong> : normaliser par exemple, indépendamment du batch → standard des Transformers (GPT, BERT, LLaMA).</li>
+            <li><strong>Label Smoothing</strong> : ramollir les cibles one-hot → meilleure calibration, modèle moins surconfiant.</li>
+            <li><strong>Augmentation</strong> : diversifier les données = régularisation implicite la plus efficace sur petits datasets.</li>
+            <li><strong>Lien Stacking</strong> : Dropout ≈ stacking bayésien implicite — même réduction de variance.</li>
+          </ul>
+        </div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:12px;">
+        <div class="card gv">
+          <div class="ct cv">Tendances récentes</div>
+          <ul>
+            <li><strong>RMSNorm</strong> : LLaMA 3, Mistral — LayerNorm sans centrage, 15% plus rapide.</li>
+            <li><strong>Stochastic Depth</strong> : Dropout sur des blocs entiers (EfficientNet v2).</li>
+            <li><strong>Dropout adaptatif</strong> : taux variable selon la profondeur et la confiance.</li>
+          </ul>
+        </div>
+        <div class="card go">
+          <div class="ct co">Vers les chapitres suivants</div>
+          <ul>
+            <li>LayerNorm → prérequis direct pour les <strong>Transformers</strong></li>
+            <li>Label Smoothing → ancêtre des régularisations des VAE et diffusion models</li>
+            <li>MC-Dropout → approches d'<strong>incertitude bayésienne</strong> en DL</li>
+          </ul>
+        </div>
+        <div class="hl"><strong>Questions ?</strong> Prêts à discuter des choix d'implémentation, des résultats d'ablation et du lien conceptuel Dropout ↔ Stacking.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════ NAV ══════════════ -->
+<div id="nav">
+  <button onclick="goTo(0)">⟨⟨</button>
+  <button onclick="go(-1)">← Préc.</button>
+  <span id="counter">1 / 16</span>
+  <button onclick="go(1)">Suiv. →</button>
+  <button onclick="goTo(T-1)">⟩⟩</button>
+</div>
+
+<script>
+// ── Neuron canvas ──────────────────────────────────────────────
+const cv=document.getElementById('neuron-canvas');
+const cx=cv.getContext('2d');
+let nodes=[];
+function resize(){cv.width=window.innerWidth;cv.height=window.innerHeight;initN();}
+function initN(){nodes=[];for(let i=0;i<60;i++)nodes.push({x:Math.random()*cv.width,y:Math.random()*cv.height,vx:(Math.random()-.5)*.35,vy:(Math.random()-.5)*.35,r:Math.random()*2.6+1.2,on:Math.random()>.3,ph:Math.random()*Math.PI*2});}
+function draw(){
+  cx.clearRect(0,0,cv.width,cv.height);
+  for(let i=0;i<nodes.length;i++)for(let j=i+1;j<nodes.length;j++){
+    const dx=nodes[i].x-nodes[j].x,dy=nodes[i].y-nodes[j].y,d=Math.sqrt(dx*dx+dy*dy);
+    if(d<120){const a=(1-d/120)*(nodes[i].on&&nodes[j].on?.12:.03);
+    cx.strokeStyle=nodes[i].on&&nodes[j].on?`rgba(0,212,255,${a})`:`rgba(139,111,255,${a})`;
+    cx.lineWidth=1;cx.beginPath();cx.moveTo(nodes[i].x,nodes[i].y);cx.lineTo(nodes[j].x,nodes[j].y);cx.stroke();}}
+  nodes.forEach(n=>{
+    n.ph+=.016;const s=n.r+Math.sin(n.ph)*.65;
+    cx.beginPath();cx.arc(n.x,n.y,s,0,Math.PI*2);
+    if(n.on){cx.fillStyle='rgba(0,212,255,0.5)';cx.shadowColor='#00D4FF';cx.shadowBlur=8;}
+    else{cx.fillStyle='rgba(139,111,255,0.18)';cx.shadowBlur=0;}
+    cx.fill();cx.shadowBlur=0;
+    n.x+=n.vx;n.y+=n.vy;
+    if(n.x<0||n.x>cv.width)n.vx*=-1;if(n.y<0||n.y>cv.height)n.vy*=-1;
+    if(Math.random()<.001)n.on=!n.on;
+  });
+  requestAnimationFrame(draw);
+}
+window.addEventListener('resize',resize);resize();draw();
+
+// ── Slides ────────────────────────────────────────────────────
+const slides=document.querySelectorAll('.slide');
+const T=slides.length;
+let cur=0;
+function goTo(n){
+  slides[cur].classList.remove('active');
+  cur=Math.max(0,Math.min(n,T-1));
+  slides[cur].classList.add('active');
+  document.getElementById('counter').textContent=(cur+1)+' / '+T;
+  document.getElementById('progress').style.width=((cur+1)/T*100)+'%';
+  const b=slides[cur].querySelector('.sbody');if(b)b.scrollTop=0;
+}
+function go(d){goTo(cur+d);}
+document.addEventListener('keydown',e=>{
+  if(e.key==='ArrowRight'||e.key==='ArrowDown')go(1);
+  if(e.key==='ArrowLeft'||e.key==='ArrowUp')go(-1);
+  if(e.key==='Home')goTo(0);if(e.key==='End')goTo(T-1);
+});
+document.getElementById('progress').style.width=(1/T*100)+'%';
+</script>
+</body>
+</html>

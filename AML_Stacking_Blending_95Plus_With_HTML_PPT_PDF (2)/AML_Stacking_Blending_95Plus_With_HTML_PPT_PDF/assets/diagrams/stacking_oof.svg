@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1100" height="520" viewBox="0 0 1100 520">
+<defs>
+  <linearGradient id="bg" x1="0" x2="1"><stop offset="0" stop-color="#F8FBFF"/><stop offset="1" stop-color="#EEF6FF"/></linearGradient>
+  <linearGradient id="c" x1="0" x2="1"><stop offset="0" stop-color="#2563EB"/><stop offset="1" stop-color="#0891B2"/></linearGradient>
+  <marker id="arr" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto"><path d="M0,0 L0,6 L9,3 z" fill="#2563EB"/></marker>
+</defs>
+<rect width="1100" height="520" rx="24" fill="url(#bg)"/>
+<text x="550" y="48" fill="#0B1736" font-family="Inter,Arial" font-size="28" font-weight="800" text-anchor="middle">Stacking avec Out-of-Fold Cross-Validation</text>
+<text x="550" y="78" fill="#5F6F8C" font-family="Inter,Arial" font-size="15" text-anchor="middle">Chaque observation est prédite par un modèle qui ne l’a jamais vue</text>
+<g font-family="Inter,Arial">
+  <rect x="60" y="120" width="230" height="280" rx="16" fill="#FFFFFF" stroke="#BFD3F7"/>
+  <text x="175" y="150" fill="#2563EB" font-size="16" font-weight="800" text-anchor="middle">Train set D</text>
+  <rect x="95" y="185" width="160" height="32" rx="7" fill="#DBEAFE"/><text x="175" y="207" fill="#0B1736" font-size="13" text-anchor="middle">Fold 1</text>
+  <rect x="95" y="230" width="160" height="32" rx="7" fill="#EDE9FE"/><text x="175" y="252" fill="#0B1736" font-size="13" text-anchor="middle">Fold 2</text>
+  <rect x="95" y="275" width="160" height="32" rx="7" fill="#CCFBF1"/><text x="175" y="297" fill="#0B1736" font-size="13" text-anchor="middle">Fold 3</text>
+  <rect x="95" y="320" width="160" height="32" rx="7" fill="#FFEDD5"/><text x="175" y="342" fill="#0B1736" font-size="13" text-anchor="middle">Fold K</text>
+
+  <rect x="405" y="112" width="260" height="310" rx="16" fill="#FFFFFF" stroke="#C4B5FD"/>
+  <text x="535" y="145" fill="#7C3AED" font-size="16" font-weight="800" text-anchor="middle">Base learners</text>
+  <rect x="445" y="185" width="180" height="42" rx="9" fill="#F8FBFF" stroke="#2563EB"/><text x="535" y="212" fill="#0B1736" font-size="14" text-anchor="middle">Logistic Regression</text>
+  <rect x="445" y="245" width="180" height="42" rx="9" fill="#F8FBFF" stroke="#0F766E"/><text x="535" y="272" fill="#0B1736" font-size="14" text-anchor="middle">Random Forest</text>
+  <rect x="445" y="305" width="180" height="42" rx="9" fill="#F8FBFF" stroke="#EA7A1A"/><text x="535" y="332" fill="#0B1736" font-size="14" text-anchor="middle">SVM / KNN / XGB</text>
+
+  <rect x="770" y="120" width="260" height="128" rx="16" fill="#FFFFFF" stroke="#99F6E4"/>
+  <text x="900" y="152" fill="#0F766E" font-size="16" font-weight="800" text-anchor="middle">Matrice Z</text>
+  <text x="900" y="185" fill="#0B1736" font-size="15" text-anchor="middle">Z[i,j] = ŷ_j(x_i)</text>
+  <text x="900" y="214" fill="#5F6F8C" font-size="13" text-anchor="middle">OOF meta-features propres</text>
+
+  <rect x="770" y="300" width="260" height="112" rx="16" fill="#FFFFFF" stroke="#FED7AA"/>
+  <text x="900" y="335" fill="#EA7A1A" font-size="16" font-weight="800" text-anchor="middle">Meta-learner g</text>
+  <text x="900" y="367" fill="#0B1736" font-size="15" text-anchor="middle">ŷ = g(Z)</text>
+  <text x="900" y="393" fill="#5F6F8C" font-size="13" text-anchor="middle">LogReg / RF / XGBoost / LightGBM</text>
+
+  <line x1="290" y1="260" x2="405" y2="260" stroke="#2563EB" stroke-width="2.5" marker-end="url(#arr)"/>
+  <line x1="665" y1="260" x2="770" y2="185" stroke="#2563EB" stroke-width="2.5" marker-end="url(#arr)"/>
+  <line x1="900" y1="248" x2="900" y2="300" stroke="#2563EB" stroke-width="2.5" marker-end="url(#arr)"/>
+</g>
+</svg>

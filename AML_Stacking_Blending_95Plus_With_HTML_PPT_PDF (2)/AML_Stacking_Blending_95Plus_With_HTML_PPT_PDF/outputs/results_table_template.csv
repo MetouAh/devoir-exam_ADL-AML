@@ -1,0 +1,14 @@
+model,accuracy,f1_macro,precision_macro,recall_macro,roc_auc,train_time_sec,dataset,status
+Logistic Regression,,,,,,,Wine Quality,to_generate
+Random Forest,,,,,,,Wine Quality,to_generate
+SVM,,,,,,,Wine Quality,to_generate
+KNN,,,,,,,Wine Quality,to_generate
+Gradient Boosting,,,,,,,Wine Quality,to_generate
+XGBoost,,,,,,,Wine Quality,to_generate
+LightGBM,,,,,,,Wine Quality,to_generate
+Hard Voting,,,,,,,Wine Quality,to_generate
+Soft Voting,,,,,,,Wine Quality,to_generate
+Custom Stacking,,,,,,,Wine Quality,to_generate
+sklearn StackingClassifier,,,,,,,Wine Quality,to_generate
+mlxtend StackingCVClassifier,,,,,,,Wine Quality,to_generate
+Custom Blending,,,,,,,Wine Quality,to_generate

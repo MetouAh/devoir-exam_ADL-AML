@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Stacking et Out-of-Fold — AML Stacking & Blending</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+<body>
+<div class="progress"></div>
+<div class="page-shell">
+  <aside class="sidebar">
+    <div class="brand"><div class="brand-mark"></div><div><h1>AML · Stacking</h1><p>Master IA · Paire 4</p></div></div>
+    <div class="side-actions">
+      <button class="btn ghost mobile-menu">Menu</button>
+      <button class="btn ghost" onclick="toggleTheme()">Mode clair/sombre</button>
+      <a class="btn green" href="../notebooks/05_master_complete_colab.ipynb">Notebook complet</a>
+    </div>
+    <div class="nav">
+      <div class="nav-group-title">Pages du cours</div>
+      <a class="" href="../index.html">Accueil</a>
+<a class="" href="01_motivation.html">1 · Motivation & Ensemble</a>
+<a class="active" href="02_stacking_oof.html">2 · Stacking & OOF</a>
+<a class="" href="03_blending_comparison.html">3 · Blending & Comparaison</a>
+<a class="" href="04_math_pseudocode.html">4 · Math & Pseudo-code</a>
+<a class="" href="05_implementation.html">5 · Implémentations</a>
+<a class="" href="06_experiments.html">6 · Expériences</a>
+<a class="" href="07_aml_adl_bridge.html">7 · Pont AML × ADL</a>
+<a class="" href="08_questions_references.html">8 · Questions & Références</a>
+      <div class="nav-group-title">Code & livrables</div>
+      <a href="../src/stacking_from_scratch.py">CustomStackingClassifier</a>
+      <a href="../src/blending.py">CustomBlendingClassifier</a>
+      <a href="../README.md">README</a>
+      <a href="../references.md">Bibliographie</a>
+    </div>
+  </aside>
+  <main class="main">
+    <div class="topbar">
+      <button class="btn ghost mobile-menu">☰</button>
+      <div class="breadcrumbs">AML × ADL / Stacking et Blending / Stacking et Out-of-Fold</div>
+      <button class="btn ghost" onclick="toggleTheme()">☼</button>
+    </div>
+    <div class="container">
+      <section class="section">
+        <div class="eyebrow">Advanced Machine Learning</div>
+        <h2>Stacking et Out-of-Fold</h2>
+        <p class="lead">Architecture à deux niveaux : base learners + meta-learner, avec construction OOF pour éviter la fuite de données.</p>
+      </section>
+
+<section class="section">
+  <h2>1. Définition du stacking</h2>
+  <p>Le stacking est une méthode d’ensemble dans laquelle les prédictions de plusieurs modèles de base deviennent les variables d’entrée d’un second modèle appelé meta-learner. Ce meta-learner apprend comment combiner les sorties des modèles de base.</p>
+  <img class="diagram" src="../assets/diagrams/stacking_oof.svg" alt="Architecture stacking OOF">
+</section>
+<section class="section">
+  <h2>2. Architecture à deux niveaux</h2>
+  <div class="grid">
+    <div class="card cyan"><h3>Niveau 0 — Base learners</h3><p>Logistic Regression, SVM, KNN, Random Forest, Gradient Boosting, XGBoost, LightGBM. Ils doivent être diversifiés pour produire des erreurs différentes.</p></div>
+    <div class="card violet"><h3>Niveau 1 — Meta-learner</h3><p>Régression logistique régularisée, Random Forest, XGBoost ou LightGBM. Il apprend à combiner les prédictions.</p></div>
+  </div>
+</section>
+<section class="section">
+  <h2>3. Procédure Out-of-Fold</h2>
+  <p>Pour chaque fold, les base learners sont entraînés sur K−1 plis et prédisent uniquement le pli laissé de côté. Chaque prédiction utilisée par le meta-learner est donc produite par un modèle qui n’a pas vu l’exemple correspondant.</p>
+  <div class="code-actions"><button class="btn" onclick="copyCode('oof-code')">Copier</button><button class="btn violet" onclick="openVS('../src/stacking_from_scratch.py')">Ouvrir dans VS Code</button></div>
+  <pre id="oof-code">for train_idx, valid_idx in skf.split(X_train, y_train):
+    X_tr, X_valid = X_train.iloc[train_idx], X_train.iloc[valid_idx]
+    y_tr = y_train.iloc[train_idx]
+
+    for j, (name, model) in enumerate(base_estimators):
+        estimator = clone(model)
+        estimator.fit(X_tr, y_tr)
+        Z_train[valid_idx, j] = estimator.predict_proba(X_valid)[:, 1]</pre>
+  <div class="callout orange"><strong>Erreur fréquente :</strong> entraîner les base learners sur tout le train set puis prédire ce même train set pour entraîner le meta-learner. Cela crée une fuite de données et gonfle artificiellement les performances.</div>
+</section>
+<section class="section">
+  <h2>4. Calibration des probabilités</h2>
+  <p>Lorsque le stacking utilise <code>predict_proba</code>, les probabilités des base learners doivent être comparables. Un SVM mal calibré peut produire des probabilités moins fiables qu’une régression logistique. Pour les cas sensibles, on peut utiliser <code>CalibratedClassifierCV</code>.</p>
+</section>
+
+      <div class="pager"><a href="01_motivation.html"><small>← Page précédente</small>Motivation & Ensemble</a><a href="03_blending_comparison.html" style="text-align:right"><small>Page suivante →</small>Blending & Comparaison</a></div>
+    </div>
+  </main>
+</div>
+<script src="../script.js"></script>
+</body></html>

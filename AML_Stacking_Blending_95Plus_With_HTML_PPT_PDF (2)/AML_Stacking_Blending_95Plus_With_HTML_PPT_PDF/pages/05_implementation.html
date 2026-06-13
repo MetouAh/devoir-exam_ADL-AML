@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Implémentations et code — AML Stacking & Blending</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+<body>
+<div class="progress"></div>
+<div class="page-shell">
+  <aside class="sidebar">
+    <div class="brand"><div class="brand-mark"></div><div><h1>AML · Stacking</h1><p>Master IA · Paire 4</p></div></div>
+    <div class="side-actions">
+      <button class="btn ghost mobile-menu">Menu</button>
+      <button class="btn ghost" onclick="toggleTheme()">Mode clair/sombre</button>
+      <a class="btn green" href="../notebooks/05_master_complete_colab.ipynb">Notebook complet</a>
+    </div>
+    <div class="nav">
+      <div class="nav-group-title">Pages du cours</div>
+      <a class="" href="../index.html">Accueil</a>
+<a class="" href="01_motivation.html">1 · Motivation & Ensemble</a>
+<a class="" href="02_stacking_oof.html">2 · Stacking & OOF</a>
+<a class="" href="03_blending_comparison.html">3 · Blending & Comparaison</a>
+<a class="" href="04_math_pseudocode.html">4 · Math & Pseudo-code</a>
+<a class="active" href="05_implementation.html">5 · Implémentations</a>
+<a class="" href="06_experiments.html">6 · Expériences</a>
+<a class="" href="07_aml_adl_bridge.html">7 · Pont AML × ADL</a>
+<a class="" href="08_questions_references.html">8 · Questions & Références</a>
+      <div class="nav-group-title">Code & livrables</div>
+      <a href="../src/stacking_from_scratch.py">CustomStackingClassifier</a>
+      <a href="../src/blending.py">CustomBlendingClassifier</a>
+      <a href="../README.md">README</a>
+      <a href="../references.md">Bibliographie</a>
+    </div>
+  </aside>
+  <main class="main">
+    <div class="topbar">
+      <button class="btn ghost mobile-menu">☰</button>
+      <div class="breadcrumbs">AML × ADL / Stacking et Blending / Implémentations et code</div>
+      <button class="btn ghost" onclick="toggleTheme()">☼</button>
+    </div>
+    <div class="container">
+      <section class="section">
+        <div class="eyebrow">Advanced Machine Learning</div>
+        <h2>Implémentations et code</h2>
+        <p class="lead">Code minimal from scratch puis bibliothèques de production : scikit-learn, mlxtend, XGBoost et LightGBM.</p>
+      </section>
+
+<section class="section">
+  <h2>1. Implémentation from scratch</h2>
+  <p>La classe <code>CustomStackingClassifier</code> montre explicitement les OOF predictions. C’est la partie la plus importante à comprendre pour le devoir.</p>
+  <div class="button-row">
+    <a class="btn" href="../src/stacking_from_scratch.py">Ouvrir stacking_from_scratch.py</a>
+    <a class="btn violet" href="../notebooks/01_stacking_from_scratch.ipynb">Notebook from scratch</a>
+    <button class="btn ghost" onclick="openVS('../src/stacking_from_scratch.py')">VS Code</button>
+  </div>
+</section>
+<section class="section">
+  <h2>2. StackingClassifier — scikit-learn</h2>
+  <div class="code-actions"><button class="btn" onclick="copyCode('sk')">Copier</button></div>
+  <pre id="sk">stacking_lr = StackingClassifier(
+    estimators=base_learners,
+    final_estimator=LogisticRegression(max_iter=5000, random_state=SEED),
+    stack_method="predict_proba",
+    cv=5,
+    n_jobs=-1
+)</pre>
+  <p>Cette implémentation est celle à utiliser en production académique lorsqu’on veut un code stable, intégré aux pipelines scikit-learn.</p>
+</section>
+<section class="section">
+  <h2>3. StackingCVClassifier — mlxtend</h2>
+  <div class="code-actions"><button class="btn" onclick="copyCode('mlxt')">Copier</button></div>
+  <pre id="mlxt">stacking_cv = StackingCVClassifier(
+    classifiers=[model for _, model in base_learners],
+    meta_classifier=LogisticRegression(max_iter=5000, random_state=SEED),
+    use_probas=True,
+    cv=5,
+    random_state=SEED,
+    n_jobs=-1
+)</pre>
+</section>
+<section class="section">
+  <h2>4. Meta-learners à tester</h2>
+  <div class="table-wrap"><table>
+    <tr><th>Meta-learner</th><th>Avantage</th><th>Risque</th></tr>
+    <tr><td><strong>Logistic Regression régularisée</strong></td><td>Simple, interprétable, robuste</td><td>Peut manquer de non-linéarité</td></tr>
+    <tr><td><strong>Random Forest</strong></td><td>Capture interactions entre base learners</td><td>Moins calibré</td></tr>
+    <tr><td><strong>XGBoost</strong></td><td>Très performant en tabulaire</td><td>Risque d’overfitting si petit Z</td></tr>
+    <tr><td><strong>LightGBM</strong></td><td>Rapide, efficace</td><td>Paramétrage sensible</td></tr>
+  </table></div>
+</section>
+<section class="section">
+  <h2>5. Liens vers notebooks</h2>
+  <div class="grid">
+    <a class="card cyan" href="../notebooks/01_stacking_from_scratch.ipynb" style="text-decoration:none"><h3>01 — From scratch</h3><p>CustomStackingClassifier avec OOF.</p></a>
+    <a class="card violet" href="../notebooks/02_stacking_sklearn_mlxtend.ipynb" style="text-decoration:none"><h3>02 — sklearn + mlxtend</h3><p>StackingClassifier et StackingCVClassifier.</p></a>
+    <a class="card orange" href="../notebooks/03_blending_wine_quality.ipynb" style="text-decoration:none"><h3>03 — Blending</h3><p>Implémentation hold-out.</p></a>
+    <a class="card green" href="../notebooks/04_stability_30_seeds.ipynb" style="text-decoration:none"><h3>04 — 30 seeds</h3><p>Distribution et robustesse des métriques.</p></a>
+  </div>
+</section>
+
+      <div class="pager"><a href="04_math_pseudocode.html"><small>← Page précédente</small>Math & Pseudo-code</a><a href="06_experiments.html" style="text-align:right"><small>Page suivante →</small>Expériences</a></div>
+    </div>
+  </main>
+</div>
+<script src="../script.js"></script>
+</body></html>

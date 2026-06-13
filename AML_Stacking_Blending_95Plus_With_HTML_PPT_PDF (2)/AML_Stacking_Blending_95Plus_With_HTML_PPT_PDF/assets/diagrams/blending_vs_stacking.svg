@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1100" height="520" viewBox="0 0 1100 520">
+<rect width="1100" height="520" rx="24" fill="#F8FBFF"/>
+<text x="550" y="48" fill="#0B1736" font-family="Inter,Arial" font-size="28" font-weight="800" text-anchor="middle">Stacking vs Blending</text>
+<g font-family="Inter,Arial">
+  <rect x="60" y="95" width="470" height="360" rx="18" fill="#FFFFFF" stroke="#93C5FD"/>
+  <text x="295" y="132" fill="#2563EB" font-size="22" font-weight="800" text-anchor="middle">Stacking OOF</text>
+  <text x="100" y="180" fill="#12213F" font-size="16">• KFold Out-of-Fold</text>
+  <text x="100" y="220" fill="#12213F" font-size="16">• Utilise efficacement tout le train set</text>
+  <text x="100" y="260" fill="#12213F" font-size="16">• Plus robuste statistiquement</text>
+  <text x="100" y="300" fill="#12213F" font-size="16">• Coût : M modèles × K folds</text>
+  <text x="100" y="350" fill="#059669" font-size="16" font-weight="800">Recommandé pour le devoir académique</text>
+
+  <rect x="570" y="95" width="470" height="360" rx="18" fill="#FFFFFF" stroke="#FDBA74"/>
+  <text x="805" y="132" fill="#EA7A1A" font-size="22" font-weight="800" text-anchor="middle">Blending</text>
+  <text x="610" y="180" fill="#12213F" font-size="16">• Hold-out blend set</text>
+  <text x="610" y="220" fill="#12213F" font-size="16">• Sacrifie une partie du train set</text>
+  <text x="610" y="260" fill="#12213F" font-size="16">• Plus simple et plus rapide</text>
+  <text x="610" y="300" fill="#12213F" font-size="16">• Dépend fortement du split</text>
+  <text x="610" y="350" fill="#EA7A1A" font-size="16" font-weight="800">Bonne variante comparative</text>
+</g>
+</svg>

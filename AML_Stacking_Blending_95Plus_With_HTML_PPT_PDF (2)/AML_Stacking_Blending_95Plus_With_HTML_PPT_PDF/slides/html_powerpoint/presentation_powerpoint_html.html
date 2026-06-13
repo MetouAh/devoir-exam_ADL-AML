@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PowerPoint HTML/CSS — AML Stacking et Blending</title>
+<link rel="stylesheet" href="slides.css">
+</head>
+<body>
+<nav class="deck-nav">
+  <button onclick="prevSlide()">←</button>
+  <strong>AML — Stacking et Blending</strong>
+  <button onclick="nextSlide()">→</button>
+</nav>
+<main class="deck">
+
+<section class="slide" id="s01">
+  <div class="slide-no">01/25</div>
+  <div class="eyebrow">Advanced Machine Learning · Paire 4</div>
+  <h1>Stacking et Blending</h1>
+  <h2>Advanced Machine Learning - Paire 4</h2>
+  <div class="accent-card"><p>Objectif : comprendre, implémenter et évaluer les ensembles par méta-apprentissage.</p></div>
+  <div class="tags"><span>Stacking</span><span>Blending</span><span>OOF</span><span>Wine Quality</span><span>30 seeds</span></div>
+</section>
+
+<section class="slide" id="s02">
+  <div class="slide-no">02/25</div>
+  <div class="eyebrow">Advanced Machine Learning · Paire 4</div>
+  <h1>Objectifs pédagogiques</h1>
+  <h2>Ce que le chapitre doit prouver</h2>
+  <div class="accent-card"><p>Présenter le stacking comme méta-apprentissage, maîtriser OOF, différencier blending et relier AML à la régularisation ADL.</p></div>
+  <div class="tags"><span>Meta-learning</span><span>Anti-leakage</span><span>Comparaison</span><span>Lien ADL</span></div>
+</section>
+
+<section class="slide" id="s03">
+  <div class="slide-no">03/25</div>
+  <div class="eyebrow">Advanced Machine Learning · Paire 4</div>
+  <h1>Plan du cours</h1>
+  <h2>De l'intuition à l'expérimentation</h2>
+  <div class="accent-card"><p>Le parcours suit la logique officielle : motivation, architecture, OOF, blending, code, expériences, stabilité et bonnes pratiques.</p></div>
+  <div class="tags"><span>1. Motivation</span><span>2. Stacking</span><span>3. OOF</span><span>4. Blending</span><span>5. Expériences</span></div>
+</section>
+
+<section class="slide" id="s04">
+  <div class="slide-no">04/25</div>
+  <div class="eyebrow">Advanced Machine Learning · Paire 4</div>
+  <h1>Pourquoi les ensembles ?</h1>
+  <h2>Réduire l'erreur de généralisation</h2>
+  <div class="accent-card"><p>Bagging réduit la variance, boosting réduit le biais, voting combine par règle fixe et stacking apprend une règle de combinaison.</p></div>
+  <div class="tags"><span>Bagging</span><span>Boosting</span><span>Voting</span><span>Stacking</span></div>
+</section>
+
+<section class="slide" id="s05">
+  <div class="slide-no">05/25</div>
+  <div class="eyebrow">Advanced Machine Learning · Paire 4</div>
+  <h1>Limites du vote majoritaire</h1>
+  <h2>Le voting est simple mais rigide</h2>
+  <div class="accent-card"><p>Hard voting ignore la confiance ; soft voting dépend de la calibration. Le stacking apprend comment exploiter les modèles.</p></div>
+  <div class="tags"><span>Hard voting</span><span>Soft voting</span><span>Calibration</span><span>Poids appris</span></div>
+</section>
+
+<section class="slide" id="s06">
+  <div class="slide-no">06/25</div>
+  <div class="eyebrow">Advanced Machine Learning · Paire 4</div>
+  <h1>Stacking : intuition</h1>
+  <h2>Apprendre à combiner les modèles</h2>
+  <div class="accent-card"><p>Les prédictions des base learners deviennent des variables d'entrée pour un second modèle : le meta-learner.</p></div>
+  <div class="tags"><span>Base learners</span><span>Meta-features</span><span>Meta-learner</span><span>ŷ = g(Z)</span></div>
+</section>
+
+<section class="slide" id="s07">
+  <div class="slide-no">07/25</div>
+  <div class="eyebrow">Advanced Machine Learning · Paire 4</div>
+  <h1>Architecture à deux niveaux</h1>
+  <h2>Niveau 0 + Niveau 1</h2>
+  <div class="flow"><div>Niveau 0<br><b>Base learners</b></div><div class="arrow">→</div><div>Z<br><b>Meta-features</b></div><div class="arrow">→</div><div>Niveau 1<br><b>Meta-learner</b></div></div>
+  <div class="tags"><span>LogReg</span><span>SVM</span><span>RF</span><span>XGB</span><span>LightGBM</span></div>
+</section>
+
+<section class="slide" id="s08">
+  <div class="slide-no">08/25</div>
+  <div class="eyebrow">Advanced Machine Learning · Paire 4</div>
+  <h1>Out-of-Fold</h1>
+  <h2>La clé anti-fuite</h2>
+  <div class="accent-card"><p>Chaque ligne de Z_train doit être prédite par un modèle qui n'a jamais vu cette observation.</p></div>
+  <div class="tags"><span>KFold</span><span>OOF</span><span>Z_train</span><span>No leakage</span></div>
+</section>
+
+<section class="slide" id="s09">
+  <div class="slide-no">09/25</div>
+  <div class="eyebrow">Advanced Machine Learning · Paire 4</div>
+  <h1>Data leakage</h1>
+  <h2>L'erreur critique du stacking</h2>
+  <div class="accent-card"><p>Si les prédictions in-sample entraînent le meta-learner, le score devient artificiellement optimiste et instable.</p></div>
+  <div class="tags"><span>In-sample</span><span>Overfitting</span><span>OOF strict</span><span>Pipeline</span></div>
+</section>
+
+<section class="slide" id="s10">
+  <div class="slide-no">10/25</div>
+  <div class="eyebrow">Advanced Machine Learning · Paire 4</div>
+  <h1>Contenu mathématique</h1>
+  <h2>Formules minimales exigées</h2>
+  <div class="accent-card"><p>Z[i,j] = h_j^(-k)(x_i). En probabilités : Z[i,j,c] = P_j(y=c|x_i). Le meta-learner apprend g*(Z).</p></div>
+  <div class="tags"><span>Z[i,j]</span><span>P(y=c|x)</span><span>g(Z)</span><span>Regularisation</span></div>
+</section>
+
+<section class="slide" id="s11">
+  <div class="slide-no">11/25</div>
+  <div class="eyebrow">Advanced Machine Learning · Paire 4</div>
+  <h1>Pseudo-code OOF</h1>
+  <h2>Procédure reproductible</h2>
+  <div class="accent-card"><p>Pour chaque modèle et chaque fold : entraîner sur K-1 folds, prédire le fold laissé de côté, stocker dans Z, entraîner g.</p></div>
+  <div class="tags"><span>train</span><span>predict fold</span><span>store Z</span><span>fit g</span></div>
+</section>
+
+<section class="slide" id="s12">
+  <div class="slide-no">12/25</div>
+  <div class="eyebrow">Advanced Machine Learning · Paire 4</div>
+  <h1>Blending</h1>
+  <h2>Variante hold-out</h2>
+  <div class="accent-card"><p>Le train set est découpé en D_base et D_blend. Les base learners apprennent sur D_base ; le meta-learner apprend sur D_blend.</p></div>
+  <div class="tags"><span>D_base</span><span>D_blend</span><span>Simple</span><span>Rapide</span></div>
+</section>
+
+<section class="slide" id="s13">
+  <div class="slide-no">13/25</div>
+  <div class="eyebrow">Advanced Machine Learning · Paire 4</div>
+  <h1>Stacking vs Blending</h1>
+  <h2>Comparaison centrale</h2>
+  <div class="compare"><div><h3>Stacking OOF</h3><p>KFold, robuste, utilise toutes les données, plus coûteux.</p></div><div><h3>Blending</h3><p>Hold-out, simple, rapide, dépend du split.</p></div></div>
+  <div class="tags"><span>OOF</span><span>Hold-out</span><span>Robustesse</span><span>Coût</span></div>
+</section>
+
+<section class="slide" id="s14">
+  <div class="slide-no">14/25</div>
+  <div class="eyebrow">Advanced Machine Learning · Paire 4</div>
+  <h1>Calibration des probabilités</h1>
+  <h2>Soft voting et stacking probabiliste</h2>
+  <div class="accent-card"><p>Les probabilités doivent être fiables. Sinon, les modèles mal calibrés peuvent dominer injustement le meta-learner.</p></div>
+  <div class="tags"><span>predict_proba</span><span>ROC-AUC</span><span>Platt</span><span>Isotonic</span></div>
+</section>
+
+<section class="slide" id="s15">
+  <div class="slide-no">15/25</div>
+  <div class="eyebrow">Advanced Machine Learning · Paire 4</div>
+  <h1>Implémentation maison</h1>
+  <h2>CustomStackingClassifier</h2>
+  <div class="accent-card"><p>La classe from scratch montre explicitement la construction OOF, le clonage des modèles et le réentraînement final.</p></div>
+  <div class="tags"><span>StratifiedKFold</span><span>clone</span><span>oof_meta_features</span><span>fit/predict</span></div>
+</section>
+
+<section class="slide" id="s16">
+  <div class="slide-no">16/25</div>
+  <div class="eyebrow">Advanced Machine Learning · Paire 4</div>
+  <h1>Bibliothèques de production</h1>
+  <h2>scikit-learn et mlxtend</h2>
+  <div class="accent-card"><p>StackingClassifier et StackingCVClassifier permettent une implémentation fiable et réutilisable dans un pipeline expérimental.</p></div>
+  <div class="tags"><span>StackingClassifier</span><span>StackingCVClassifier</span><span>Pipeline</span><span>n_jobs</span></div>
+</section>
+
+<section class="slide" id="s17">
+  <div class="slide-no">17/25</div>
+  <div class="eyebrow">Advanced Machine Learning · Paire 4</div>
+  <h1>Datasets</h1>
+  <h2>Expérience principale + validation secondaire</h2>
+  <div class="accent-card"><p>Wine Quality UCI reste l'expérience principale. Pima Indians Diabetes ou Breast Cancer servent à vérifier la robustesse.</p></div>
+  <div class="tags"><span>Wine Quality</span><span>Pima</span><span>Breast Cancer</span><span>Tabular</span></div>
+</section>
+
+<section class="slide" id="s18">
+  <div class="slide-no">18/25</div>
+  <div class="eyebrow">Advanced Machine Learning · Paire 4</div>
+  <h1>Protocole expérimental</h1>
+  <h2>Comparaison équitable</h2>
+  <div class="flow wide"><div>Dataset</div><div class="arrow">→</div><div>Pipeline</div><div class="arrow">→</div><div>Models</div><div class="arrow">→</div><div>Metrics</div><div class="arrow">→</div><div>30 seeds</div></div>
+  <div class="tags"><span>Split</span><span>Pipeline</span><span>Baselines</span><span>Metrics</span></div>
+</section>
+
+<section class="slide" id="s19">
+  <div class="slide-no">19/25</div>
+  <div class="eyebrow">Advanced Machine Learning · Paire 4</div>
+  <h1>Modèles comparés</h1>
+  <h2>Best Single vs Voting vs Stacking</h2>
+  <div class="accent-card"><p>LogReg, SVM, KNN, RF, GB, XGB, LGBM, hard/soft voting, custom stacking, sklearn stacking, mlxtend et blending.</p></div>
+  <div class="tags"><span>Best Single</span><span>Voting</span><span>Stacking</span><span>Blending</span></div>
+</section>
+
+<section class="slide" id="s20">
+  <div class="slide-no">20/25</div>
+  <div class="eyebrow">Advanced Machine Learning · Paire 4</div>
+  <h1>Métriques</h1>
+  <h2>Performance, robustesse et coût</h2>
+  <div class="accent-card"><p>Accuracy, F1 macro, Precision/Recall macro, ROC-AUC et temps d'entraînement. F1 macro est la métrique centrale.</p></div>
+  <div class="tags"><span>Accuracy</span><span>F1 macro</span><span>ROC-AUC</span><span>Time</span></div>
+</section>
+
+<section class="slide" id="s21">
+  <div class="slide-no">21/25</div>
+  <div class="eyebrow">Advanced Machine Learning · Paire 4</div>
+  <h1>Stabilité sur 30 seeds</h1>
+  <h2>Éviter la conclusion chanceuse</h2>
+  <div class="accent-card"><p>Comparer moyenne, écart-type, min, max et boxplots. Un bon modèle doit être performant et stable.</p></div>
+  <div class="tags"><span>Mean</span><span>Std</span><span>Boxplot</span><span>Robustness</span></div>
+</section>
+
+<section class="slide" id="s22">
+  <div class="slide-no">22/25</div>
+  <div class="eyebrow">Advanced Machine Learning · Paire 4</div>
+  <h1>Pont AML × ADL</h1>
+  <h2>Stacking et régularisation neuronale</h2>
+  <div class="accent-card"><p>Stacking combine explicitement plusieurs modèles ; Dropout peut être vu comme un ensemble implicite de sous-réseaux.</p></div>
+  <div class="tags"><span>Dropout</span><span>MC Dropout</span><span>BatchNorm</span><span>Label smoothing</span></div>
+</section>
+
+<section class="slide" id="s23">
+  <div class="slide-no">23/25</div>
+  <div class="eyebrow">Advanced Machine Learning · Paire 4</div>
+  <h1>Pièges et bonnes pratiques</h1>
+  <h2>Ce qu'il faut absolument éviter</h2>
+  <div class="accent-card"><p>Fuite de données, modèles trop similaires, meta-learner trop complexe, probabilités mal calibrées et absence de stabilité.</p></div>
+  <div class="tags"><span>Leakage</span><span>Diversity</span><span>Calibration</span><span>30 seeds</span></div>
+</section>
+
+<section class="slide" id="s24">
+  <div class="slide-no">24/25</div>
+  <div class="eyebrow">Advanced Machine Learning · Paire 4</div>
+  <h1>Livrables officiels</h1>
+  <h2>Ce que contient le projet</h2>
+  <div class="accent-card"><p>Mini-site HTML, notebooks Colab, code Python, rapport académique, questions professeur, bibliographie, PowerPoint HTML/CSS, PPTX et PDF.</p></div>
+  <div class="tags"><span>HTML</span><span>Notebooks</span><span>PPTX</span><span>PDF</span></div>
+</section>
+
+<section class="slide" id="s25">
+  <div class="slide-no">25/25</div>
+  <div class="eyebrow">Advanced Machine Learning · Paire 4</div>
+  <h1>Conclusion</h1>
+  <h2>Message final à défendre</h2>
+  <div class="accent-card"><p>Le stacking est puissant seulement s'il est construit sans fuite, comparé aux baselines et évalué en stabilité.</p></div>
+  <div class="tags"><span>OOF</span><span>Baselines</span><span>Stability</span><span>Deployment</span></div>
+</section>
+
+</main>
+<script src="slides.js"></script>
+</body>
+</html>

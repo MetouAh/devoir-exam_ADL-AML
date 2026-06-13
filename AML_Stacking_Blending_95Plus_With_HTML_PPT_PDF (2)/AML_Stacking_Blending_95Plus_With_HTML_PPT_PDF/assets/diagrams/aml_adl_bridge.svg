@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1100" height="520" viewBox="0 0 1100 520">
+<defs><marker id="a" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto"><path d="M0,0 L0,6 L9,3 z" fill="#2563EB"/></marker></defs>
+<rect width="1100" height="520" rx="24" fill="#F8FBFF"/>
+<text x="550" y="50" fill="#0B1736" font-family="Inter,Arial" font-size="28" font-weight="800" text-anchor="middle">Pont AML × ADL</text>
+<g font-family="Inter,Arial">
+<rect x="70" y="110" width="380" height="300" rx="18" fill="#FFFFFF" stroke="#93C5FD"/>
+<text x="260" y="150" fill="#2563EB" font-size="22" font-weight="800" text-anchor="middle">AML</text>
+<text x="260" y="190" fill="#0B1736" font-size="18" text-anchor="middle">Stacking & Blending</text>
+<text x="110" y="240" fill="#5F6F8C" font-size="15">• Ensembles explicites</text>
+<text x="110" y="275" fill="#5F6F8C" font-size="15">• Base learners + meta-learner</text>
+<text x="110" y="310" fill="#5F6F8C" font-size="15">• OOF validation</text>
+<text x="110" y="345" fill="#5F6F8C" font-size="15">• Calibration des probabilités</text>
+
+<rect x="650" y="110" width="380" height="300" rx="18" fill="#FFFFFF" stroke="#C4B5FD"/>
+<text x="840" y="150" fill="#7C3AED" font-size="22" font-weight="800" text-anchor="middle">ADL</text>
+<text x="840" y="190" fill="#0B1736" font-size="18" text-anchor="middle">Régularisation neuronale</text>
+<text x="690" y="240" fill="#5F6F8C" font-size="15">• Dropout = ensemble implicite</text>
+<text x="690" y="275" fill="#5F6F8C" font-size="15">• MC Dropout = incertitude</text>
+<text x="690" y="310" fill="#5F6F8C" font-size="15">• BatchNorm / LayerNorm</text>
+<text x="690" y="345" fill="#5F6F8C" font-size="15">• Label smoothing / Mixup</text>
+
+<line x1="450" y1="260" x2="650" y2="260" stroke="#2563EB" stroke-width="3" marker-end="url(#a)"/>
+<text x="550" y="240" fill="#059669" font-size="15" font-weight="800" text-anchor="middle">même objectif</text>
+<text x="550" y="288" fill="#12213F" font-size="14" text-anchor="middle">généralisation & robustesse</text>
+</g>
+</svg>

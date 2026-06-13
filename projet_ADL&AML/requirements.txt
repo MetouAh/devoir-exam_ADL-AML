@@ -1,0 +1,44 @@
+# ============================================================
+# Pipeline Hybride DL & ML — Requirements
+# Python 3.10+ | Compatible Google Colab T4
+# ============================================================
+
+# Deep Learning
+tensorflow>=2.12.0
+keras>=2.12.0
+
+# Machine Learning
+scikit-learn>=1.3.0
+xgboost>=1.7.0
+lightgbm>=4.0.0
+imbalanced-learn>=0.11.0
+
+# Réduction de dimensionnalité
+umap-learn>=0.5.3
+
+# Interprétabilité
+shap>=0.42.0
+
+# Données & traitement
+numpy>=1.24.0
+pandas>=2.0.0
+scipy>=1.11.0
+
+# Visualisation
+matplotlib>=3.7.0
+seaborn>=0.12.0
+
+# Suivi énergie / performance
+codecarbon>=2.3.0
+psutil>=5.9.0
+
+# Datasets
+tensorflow-datasets>=4.9.0
+kaggle>=1.5.16
+
+# Sauvegarde modèles
+joblib>=1.3.0
+
+# Utilitaires
+tqdm>=4.65.0
+Pillow>=9.5.0
